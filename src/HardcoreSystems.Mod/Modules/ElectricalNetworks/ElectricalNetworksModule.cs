@@ -15,7 +15,6 @@ namespace HardcoreSystems.Modules.ElectricalNetworks
         public bool IsEnabled(ModContext context)
         {
             return context.Settings.Power.ElectricalLossesEnabled
-                || context.Settings.Power.TransformerEfficiencyEnabled
                 || context.Settings.Power.OverloadHeatEnabled;
         }
 
@@ -57,18 +56,18 @@ namespace HardcoreSystems.Modules.ElectricalNetworks
                 context.Logger,
                 PatchGuard.TryPatch(
                     harmony,
-                    AccessTools.Method(typeof(PowerTransformer), "ApplyDeltaJoules", new[] { typeof(float), typeof(bool) }),
-                    new HarmonyMethod(typeof(ElectricalNetworksPatches), "PowerTransformerApplyDeltaJoulesPrefix"),
+                    AccessTools.Method(typeof(EnergyConsumer), "EnergySim200ms", new[] { typeof(float) }),
                     null,
+                    new HarmonyMethod(typeof(ElectricalNetworksPatches), "EnergyConsumerSim200msPostfix"),
                     Id));
 
             ModulePatchReporter.Log(
                 context.Logger,
                 PatchGuard.TryPatch(
                     harmony,
-                    AccessTools.Method(typeof(Battery), "GetDescriptors", new[] { typeof(UnityEngine.GameObject) }),
+                    AccessTools.Method(typeof(BuildingHP), "DoDamage", new[] { typeof(int) }),
                     null,
-                    new HarmonyMethod(typeof(ElectricalNetworksPatches), "BatteryGetDescriptorsPostfix"),
+                    new HarmonyMethod(typeof(ElectricalNetworksPatches), "BuildingHpDoDamagePostfix"),
                     Id));
         }
 
@@ -101,14 +100,14 @@ namespace HardcoreSystems.Modules.ElectricalNetworks
             ElectricalNetworksRuntime.SimulateCircuitTick(__instance, dt);
         }
 
-        public static void PowerTransformerApplyDeltaJoulesPrefix(float joules_delta, Battery ___battery)
+        public static void EnergyConsumerSim200msPostfix(EnergyConsumer __instance, float dt)
         {
-            ElectricalNetworksRuntime.ApplyTransformerEfficiency(joules_delta, ___battery);
+            ElectricalNetworksRuntime.ApplyConsumerBrownout(__instance, dt);
         }
 
-        public static void BatteryGetDescriptorsPostfix(Battery __instance, List<Descriptor> __result)
+        public static void BuildingHpDoDamagePostfix(BuildingHP __instance, int damage)
         {
-            ElectricalNetworksRuntime.AddTransformerDescriptor(__instance, __result);
+            ElectricalNetworksRuntime.ApplyDamageImpulse(__instance, damage);
         }
     }
 }

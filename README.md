@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Hardcore Systems is a modular Oxygen Not Included difficulty overhaul. Version 0.4.0 includes the foundation, duplicant/mining gameplay modules, generator efficiency, building heat scaling, electrical network losses, transformer efficiency, overload heat, and optional runtime diagnostics.
+Hardcore Systems is a modular Oxygen Not Included difficulty overhaul. Version 0.4.1 includes the foundation, duplicant/mining gameplay modules, generator efficiency, building heat scaling, path-based electrical losses, brownouts, overload heat, and optional runtime diagnostics.
 
 ## Architecture
 
@@ -39,7 +39,7 @@ Supported presets:
 
 Validation rejects NaN, infinity, negative values where unsafe, and values outside documented ranges.
 
-Until the options UI is implemented, enable gameplay by editing `config\hardcore_systems.json` in the installed mod folder. For v0.4 testing, enable `Mining`, `Duplicants`, `Diseases`, `Power.GeneratorEfficiencyEnabled`, `Power.ElectricalLossesEnabled`, `Power.TransformerEfficiencyEnabled`, `Power.OverloadHeatEnabled`, `IndustrialHeat.Enabled`, and optionally `Diagnostics.Enabled`, then restart ONI.
+Until the options UI is implemented, enable gameplay by editing `config\hardcore_systems.json` in the installed mod folder. For v0.4.1 testing, enable `Mining`, `Duplicants`, `Diseases`, `Power.GeneratorEfficiencyEnabled`, `Power.ElectricalLossesEnabled`, `Power.OverloadHeatEnabled`, `IndustrialHeat.Enabled`, and optionally `Diagnostics.Enabled`, then restart ONI. `Power.TransformerEfficiencyEnabled` is currently ignored because ONI's transformer behavior does not expose a useful transformation point for this mechanic.
 
 ## Usage
 
@@ -66,7 +66,7 @@ Verify load:
 
 ## Safety Model
 
-Gameplay patches are registered through `PatchGuard`. Mining yield patches `WorldDamage.OnDigComplete`; calorie balance uses a runtime `Calories.deltaAttribute` modifier; generator efficiency patches both `Generator.WattageRating` and `Building.EffectDescriptors`; building heat scaling patches `StructureTemperaturePayload.OperatingKilowatts`, `StructureTemperaturePayload.ExhaustKilowatts`, and `Building.EffectDescriptors` for any building with positive heat output. Pump buildings with zero vanilla heat, such as gas pumps, receive a small power-based self-heat fallback. Electrical networks patch `Wire.OnSpawn`, `Wire.OnCleanUp`, `CircuitManager.Sim200msFirst`, `PowerTransformer.ApplyDeltaJoules`, and `Battery.GetDescriptors`; processing is bounded per simulation tick and skips safely on errors. The mod does not patch saves directly.
+Gameplay patches are registered through `PatchGuard`. Mining yield patches `WorldDamage.OnDigComplete`; calorie balance uses a runtime `Calories.deltaAttribute` modifier; generator efficiency patches both `Generator.WattageRating` and `Building.EffectDescriptors`; building heat scaling patches `StructureTemperaturePayload.OperatingKilowatts`, `StructureTemperaturePayload.ExhaustKilowatts`, and `Building.EffectDescriptors` for any building with positive heat output. Pump buildings with zero vanilla heat, such as gas pumps, receive a small power-based self-heat fallback. Electrical networks patch `Wire.OnSpawn`, `Wire.OnCleanUp`, `CircuitManager.Sim200msFirst`, `EnergyConsumer.EnergySim200ms`, and `BuildingHP.DoDamage`; processing is bounded per simulation tick and skips safely on errors. The mod does not patch saves directly.
 
 ## Testing
 
@@ -96,5 +96,6 @@ Workshop packaging is not automated in this stage.
 - If ONI logs reference load errors, confirm the game build still ships `0Harmony.dll`, `Assembly-CSharp.dll`, `Assembly-CSharp-firstpass.dll`, `UnityEngine.CoreModule.dll`, and `Newtonsoft.Json.dll`.
 - If generator output does not change, check `Player.log` for `GeneratorEfficiency` patch registration and confirm `Power.GeneratorEfficiencyEnabled=true`.
 - If building heat scaling is not visible, test with a Coal Generator, Research Station, Liquid Pump, or Gas Pump, confirm the tooltip heat value changed after restart, and increase `IndustrialHeat.HeatMultiplier` conservatively.
-- If electrical losses are not visible, confirm `Power.ElectricalLossesEnabled=true`, `Power.WireResistanceMultiplier>0`, and that the affected circuit has batteries if you want to observe stored energy loss. Direct generator-to-consumer circuits still receive wire heat, but there may be no battery energy reserve to drain.
-- If transformer efficiency is not visible, confirm `Power.TransformerEfficiencyEnabled=true`, set `Power.TransformerEfficiency` below `1`, and test with a powered transformer that has input battery charge available.
+- If electrical losses are not visible, confirm `Power.ElectricalLossesEnabled=true` and `Power.WireResistanceMultiplier>0`. Test with a long wire run and a consumer far from the generator; short local circuits should have small losses.
+- If brownouts are not obvious, increase `Power.WireResistanceMultiplier` for testing. A delivered-power ratio below 50% keeps a consumer unpowered; 50-99% creates intermittent power to approximate reduced throughput.
+- Transformer efficiency is intentionally inactive in v0.4.1. Transformers use vanilla ONI behavior until a better hook or gameplay model is selected.

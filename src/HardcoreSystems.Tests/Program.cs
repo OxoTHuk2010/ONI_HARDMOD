@@ -118,14 +118,19 @@ namespace HardcoreSystems.Tests
 
         private static void TestElectricalNetworksCalculators()
         {
-            AssertClose(25f, TransformerEfficiencyCalculator.CalculateAdditionalInputJoules(100f, 0.80f), "Transformer efficiency adds input loss");
-            AssertClose(100f, TransformerEfficiencyCalculator.CalculateInputJoules(80f, 0.80f), "Transformer efficiency calculates total input");
-            AssertClose(0f, TransformerEfficiencyCalculator.CalculateAdditionalInputJoules(100f, 1f), "Perfect transformer has no loss");
-            AssertClose(10f, ElectricalLossCalculator.CalculateCircuitLossWatts(1000f, 1000f, 0.50f), "Circuit loss at full load");
-            AssertClose(0.5f, ElectricalLossCalculator.CalculateWireDissipationWatts(10f), "Wire receives bounded loss heat share");
-            AssertClose(20f, ElectricalLossCalculator.CalculateOverloadHeatWatts(2000f, 1000f, 1f), "Overload heat applies above safe wattage");
+            var copperCell = ElectricalLossCalculator.CalculateCellResistanceOhms(1f, 0.75f, 293.15f, 1000f);
+            var hotCopperCell = ElectricalLossCalculator.CalculateCellResistanceOhms(1f, 0.75f, 393.15f, 1000f);
+            AssertClose(0.0015f, copperCell, "Cell resistance uses material factor");
+            AssertClose(0.0021f, hotCopperCell, "Cell resistance uses temperature coefficient");
+            AssertClose(1.5f, ElectricalLossCalculator.CalculateOhmicLossWatts(1000f, copperCell), "Ohmic loss uses current squared");
+            AssertClose(0.985f, ElectricalLossCalculator.CalculateAvailability(1000f, 15f), "Availability is delivered watt ratio");
+            Assert(ElectricalLossCalculator.ShouldPowerConsumer(0.75f, 0, 10), "Brownout duty cycle powers early slots");
+            Assert(!ElectricalLossCalculator.ShouldPowerConsumer(0.75f, 9, 10), "Brownout duty cycle cuts late slots");
+            Assert(!ElectricalLossCalculator.ShouldPowerConsumer(0.49f, 0, 10), "Below half power stays off");
+            AssertClose(300f, ElectricalLossCalculator.CalculateOverloadHeatWatts(2000f, 1000f, 1f), "Overload heat applies above safe wattage");
+            AssertClose(525000f, ElectricalLossCalculator.CalculateShortCircuitImpulseWatts(1), "Short circuit impulse is intentionally large");
             AssertClose(0.0125f, ElectricalLossCalculator.CalculateTemperatureDelta(1000f, 1f, 0.2f, 400f, 2f), "Electrical wire heat delta");
-            AssertClose(0f, ElectricalLossCalculator.CalculateCircuitLossWatts(1000f, 1000f, 0f), "Zero resistance disables loss");
+            AssertClose(0f, ElectricalLossCalculator.CalculateCellResistanceOhms(0f, 1f, 293.15f, 1000f), "Zero resistance disables loss");
         }
 
         private static void Assert(bool condition, string message)

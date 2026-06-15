@@ -50,9 +50,9 @@ Fallback compiler paths:
 | Worldgen | `ProcGenGame.WorldGen` | Type found | Research only | YAML/data first |
 | Worldgen settings | `ProcGen.WorldGenSettings` | Type found | Research only | YAML/data first |
 | Cluster layout | `ProcGen.ClusterLayouts` | Type found | Research only | YAML/data first |
-| Electrical wires | `Wire`, `Wire+WattageRating` | `OnSpawn`, `OnCleanUp`, `NetworkID`, `MaxWattageRating`, `GetMaxWattageAsFloat` | Version 0.4.0 | Register active wires and process a bounded sample from `CircuitManager.Sim200msFirst` |
+| Electrical wires | `Wire`, `Wire+WattageRating` | `OnSpawn`, `OnCleanUp`, `NetworkID`, `MaxWattageRating`, `GetMaxWattageAsFloat` | Version 0.4.1 | Register active wires, build cell topology, infer path/capacity/material resistance, and process bounded overload heat |
 | Generators | `Generator`, `EnergyGenerator`, `ManualGenerator`, `Building` | `Generator.get_WattageRating`, `Building.EffectDescriptors`, `Generator.GenerateJoules`, `EnergyGenerator.EnergySim200ms`, `ManualGenerator.EnergySim200ms` | Version 0.3.0 | Postfix `WattageRating`; descriptor prefix mirrors the reduced `BuildingDef.GeneratorWattageRating` for tooltip text |
-| Transformers | `PowerTransformer`, `Battery` | `PowerTransformer.ApplyDeltaJoules(float,bool)`, private `battery`, `Battery.ConsumeEnergy(float)`, `Battery.GetDescriptors(GameObject)` | Version 0.4.0 | Prefix drains additional input joules for efficiency loss; descriptor postfix adds efficiency information |
+| Transformers | `PowerTransformer`, `Battery` | `PowerTransformer.ApplyDeltaJoules(float,bool)`, private `battery`, `Battery.ConsumeEnergy(float)`, `Battery.GetDescriptors(GameObject)` | Research only | Active transformer efficiency was disabled in 0.4.1 because ONI does not expose useful transformation behavior for the intended mechanic |
 | Diseases | `Klei.AI.Disease`, `Klei.AI.Sickness`, `Klei.AI.SlimeSickness`, `Klei.AI.FoodSickness` | Type found | Research only | Later stage |
 | Duplicants | `MinionResume`, `MinionIdentity`, `ModifierSet` | Type found | Research only | Later stage |
 | Calories | `CreatureCalorieMonitor`, `CaloriesDisplayer`, `Database.*Calories*` | Type found | Research only | Later stage |
@@ -62,7 +62,7 @@ Fallback compiler paths:
 | Skill XP | `TUNING.SKILLS` | `FULL_EXPERIENCE`, `ALL_DAY_EXPERIENCE`, `MOST_DAY_EXPERIENCE`, `PART_DAY_EXPERIENCE`, `BARELY_EVER_EXPERIENCE` | Version 0.2.0 | One-time tuning multiplier |
 | Disease effects | `Db`, `Database.Sicknesses`, `Klei.AI.Sickness` | `Db.Initialize`, non-public `Sickness.AddSicknessComponent` | Version 0.2.0 | Postfix plus guarded reflection |
 | Building heat scaling | `StructureTemperaturePayload`, `Building` | `StructureTemperaturePayload.get_OperatingKilowatts`, `StructureTemperaturePayload.get_ExhaustKilowatts`, `Building.EffectDescriptors` | Version 0.3.0 | Postfix operating/exhaust KW for ONI's structure-temperature sim; descriptor prefix mirrors scaled self/exhaust heat for any positive heat output; pump zero-heat fallback uses power consumption |
-| Electrical circuits | `CircuitManager` | `Sim200msFirst(float)`, `GetWattsUsedByCircuit(ushort)`, `GetMaxSafeWattageForCircuit(ushort)`, `GetBatteriesOnCircuit(ushort)` | Version 0.4.0 | Postfix applies bounded wire heat and optional battery drain for circuit losses |
+| Electrical circuits | `CircuitManager`, `EnergyConsumer`, `BuildingHP` | `Sim200msFirst(float)`, `GetWattsUsedByCircuit(ushort)`, `GetMaxSafeWattageForCircuit(ushort)`, `GetBatteriesOnCircuit(ushort)`, `GetGeneratorsOnCircuit(ushort)`, `EnergyConsumer.EnergySim200ms(float)`, `BuildingHP.DoDamage(int)` | Version 0.4.1 | Path-based brownout for consumers, bounded overload heat, and short-circuit heat impulse on wire damage |
 | Diagnostics | `System.Diagnostics.Stopwatch`, mod logger | n/a | Version 0.3.0 | Optional metrics recorded only when enabled |
 
 ## Sample Signatures Observed

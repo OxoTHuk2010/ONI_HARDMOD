@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.1
+
+- Reworked Electrical Networks around path-based losses instead of whole-circuit loss sampling.
+- Electrical loss now depends on path length, configured resistance multiplier, inferred wire material, wire wattage rating, and wire temperature.
+- Added brownout behavior for powered consumers: delivered power below 50% keeps the building unpowered; 50-99% uses a deterministic duty cycle to approximate reduced production speed.
+- Added strong short-circuit heat impulse when a wire building takes damage, with smaller heat applied to adjacent wires.
+- Disabled active transformer-efficiency patches; transformer settings remain in config for compatibility but are not applied.
+
 ## 0.4.0
 
 - Added Electrical Networks module for transformer efficiency, wire resistance losses, and overload heat.

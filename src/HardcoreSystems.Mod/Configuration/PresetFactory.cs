@@ -40,7 +40,7 @@ namespace HardcoreSystems.Configuration
             settings.Mining.Enabled = enabled;
             settings.Power.GeneratorEfficiencyEnabled = enabled;
             settings.Power.ElectricalLossesEnabled = enabled;
-            settings.Power.TransformerEfficiencyEnabled = enabled;
+            settings.Power.TransformerEfficiencyEnabled = false;
             settings.Power.OverloadHeatEnabled = enabled;
             settings.IndustrialHeat.Enabled = enabled;
             settings.Diseases.Enabled = enabled;
