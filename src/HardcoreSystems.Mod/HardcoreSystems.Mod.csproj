@@ -1,0 +1,124 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.props" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
+    <ProjectGuid>{6C3D11B5-7CB4-4A7F-A75E-6550D0362101}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>HardcoreSystems</RootNamespace>
+    <AssemblyName>HardcoreSystems.Mod</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>$(OniManagedDir)\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(OniManagedDir)\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>$(OniManagedDir)\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(OniManagedDir)\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="netstandard">
+      <HintPath>$(OniManagedDir)\netstandard.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="UnityEngine">
+      <HintPath>$(OniManagedDir)\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(OniManagedDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(OniManagedDir)\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bootstrap\DlcDetector.cs" />
+    <Compile Include="Bootstrap\GameCompatibility.cs" />
+    <Compile Include="Bootstrap\LocalizationRegistrar.cs" />
+    <Compile Include="Bootstrap\ModBootstrap.cs" />
+    <Compile Include="Bootstrap\PatchGuard.cs" />
+    <Compile Include="Configuration\DifficultyPreset.cs" />
+    <Compile Include="Configuration\DiagnosticsSettings.cs" />
+    <Compile Include="Configuration\DuplicantSettings.cs" />
+    <Compile Include="Configuration\DiseaseSettings.cs" />
+    <Compile Include="Configuration\FluidPressureSettings.cs" />
+    <Compile Include="Configuration\GlobalSettings.cs" />
+    <Compile Include="Configuration\IndustrialHeatSettings.cs" />
+    <Compile Include="Configuration\MiningSettings.cs" />
+    <Compile Include="Configuration\ModSettings.cs" />
+    <Compile Include="Configuration\PowerSettings.cs" />
+    <Compile Include="Configuration\PresetFactory.cs" />
+    <Compile Include="Configuration\RadiativeHeatSettings.cs" />
+    <Compile Include="Configuration\SettingsValidator.cs" />
+    <Compile Include="Configuration\ValidationResult.cs" />
+    <Compile Include="Configuration\WorldSettings.cs" />
+    <Compile Include="Diagnostics\LogLevel.cs" />
+    <Compile Include="Diagnostics\DiagnosticsRuntime.cs" />
+    <Compile Include="Diagnostics\ModLogger.cs" />
+    <Compile Include="Diagnostics\ModuleMetrics.cs" />
+    <Compile Include="Diagnostics\RateLimitedLogger.cs" />
+    <Compile Include="Localization\STRINGS.cs" />
+    <Compile Include="ModContext.cs" />
+    <Compile Include="ModEntry.cs" />
+    <Compile Include="Modules\DiseaseEffects\DiseaseEffectsModule.cs" />
+    <Compile Include="Modules\DiseaseEffects\DiseaseEffectsRuntime.cs" />
+    <Compile Include="Modules\DiseaseEffects\DiseasePenaltyCalculator.cs" />
+    <Compile Include="Modules\DuplicantBalance\DuplicantBalanceCalculator.cs" />
+    <Compile Include="Modules\DuplicantBalance\DuplicantBalanceModule.cs" />
+    <Compile Include="Modules\DuplicantBalance\DuplicantBalanceRuntime.cs" />
+    <Compile Include="Modules\ElectricalNetworks\ElectricalLossCalculator.cs" />
+    <Compile Include="Modules\ElectricalNetworks\ElectricalNetworksModule.cs" />
+    <Compile Include="Modules\ElectricalNetworks\ElectricalNetworksRuntime.cs" />
+    <Compile Include="Modules\ElectricalNetworks\TransformerEfficiencyCalculator.cs" />
+    <Compile Include="Modules\GeneratorEfficiency\GeneratorEfficiencyCalculator.cs" />
+    <Compile Include="Modules\GeneratorEfficiency\GeneratorEfficiencyModule.cs" />
+    <Compile Include="Modules\GeneratorEfficiency\GeneratorEfficiencyRuntime.cs" />
+    <Compile Include="Modules\IGameplayModule.cs" />
+    <Compile Include="Modules\IndustrialHeat\IndustrialHeatCalculator.cs" />
+    <Compile Include="Modules\IndustrialHeat\IndustrialHeatModule.cs" />
+    <Compile Include="Modules\IndustrialHeat\IndustrialHeatRuntime.cs" />
+    <Compile Include="Modules\MiningYield\MiningYieldCalculator.cs" />
+    <Compile Include="Modules\MiningYield\MiningYieldDigTracker.cs" />
+    <Compile Include="Modules\MiningYield\MiningYieldModule.cs" />
+    <Compile Include="Modules\MiningYield\MiningYieldRuntime.cs" />
+    <Compile Include="Modules\ModulePatchReporter.cs" />
+    <Compile Include="ModuleRegistry.cs" />
+    <Compile Include="Persistence\ConfigVersion.cs" />
+    <Compile Include="Persistence\GlobalConfigStore.cs" />
+    <Compile Include="Persistence\WorldGenerationSnapshot.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Localization\en.po" />
+    <Content Include="Localization\ru.po" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

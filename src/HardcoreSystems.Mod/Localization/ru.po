@@ -1,0 +1,14 @@
+msgid "Hardcore Systems"
+msgstr "Hardcore Systems"
+
+msgid "Hardcore Systems loaded"
+msgstr "Hardcore Systems загружен"
+
+msgid "Preset"
+msgstr "Пресет"
+
+msgid "Safe mode"
+msgstr "Безопасный режим"
+
+msgid "Export diagnostics"
+msgstr "Экспорт диагностики"
