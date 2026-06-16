@@ -1,173 +1,226 @@
 # План реализации
 
-Этот документ является рабочим планом реализации, собранным из `todo.txt` после применения переопределений из `FIX_TODOv0.4.txt`.
+Этот документ является рабочим планом после стабилизации версии 0.4.7.
 
 ## Источник истины
 
 Использовать документы в таком порядке:
 
-1. `todo.txt` - основная спецификация проекта после объединения переопределений.
-2. `FIX_TODOv0.4.txt` - историческая концепция патча 0.4 и причина удаления старых идей электрических потерь из активного scope.
+1. `todo.txt` - основная спецификация проекта.
+2. `docs/implementation-plan.md` - текущий пошаговый план реализации.
 3. `docs/game-api-research.md` - подтверждённые ONI API hooks и runtime-находки.
 4. `docs/implementation-note-*.md` - фактически реализованное поведение и известные ограничения конкретных версий.
 
 Если документы противоречат друг другу, сначала обновлять `todo.txt`, затем этот план.
 
-## Активный scope 0.4
+## Закрытые решения
 
-В версию 0.4 входят только:
+0.4 считается закрытым после проверки текущей 0.4.7 в игре.
 
-* профильная мощность/тепло топливных генераторов и учёт температуры топлива;
-* коррекция температуры продуктов без изменения типа и массы продуктов;
-* нагрев Solar Panel от фактической текущей генерации;
-* аварийный тепловой импульс в проводник или мост, выбранный vanilla overload damage;
-* синхронизация descriptors, hover tooltip, диагностика, тесты и локальная установка.
+Не реализуем и не держим в backlog:
 
-В версию 0.4 явно не входят:
-
-* КПД трансформаторов;
-* сопротивление проводов и потери мощности по длине;
+* 0.5 Superconductive Technology;
+* новые обычные/high-watt провода;
+* wire resistance;
+* length-based electrical losses;
 * voltage drop;
-* brownout потребителей или замедление производства;
-* постоянный резистивный нагрев исправных проводов;
-* глобальный множитель КПД генераторов.
+* consumer brownout/degraded production;
+* transformer efficiency;
+* 0.6 World Temperature.
 
-## Фаза A - стабилизация 0.4.x
+Причины:
 
-Цель: закрыть текущую ветку 0.4 перед добавлением новых областей геймплея.
+* новые провода и сверхпроводник теряют смысл без механики сопротивления/потерь;
+* электрическая модель ONI не даёт достаточно прозрачного направленного пути энергии для аккуратной физической сети без собственной сети поверх игры;
+* температурные пресеты мира уже закрываются специализированными модами;
+* дублирование этих направлений увеличит риск конфликтов и поддержки без достаточной ценности.
 
-Задачи:
+## Следующий активный релиз: 0.7 Asteroid Sizes Experimental
 
-1. Проверить рабочее дерево и найти кодовые изменения, которые ещё не собраны и не установлены.
-2. Завершить синхронизацию hover/properties генераторов:
-   * профилированные генераторы показывают v0.4 body heat в свойствах и hover;
-   * Solar Panel в свойствах показывает максимальный нагрев;
-   * Solar Panel в hover показывает текущий нагрев от `CurrentWattage`.
-3. Завершить коррекцию температуры продуктов генераторов:
-   * газовые выходы получают температуру не ниже захваченной температуры топлива;
-   * жидкие выходы ограничены ниже `Element.highTemp`;
-   * энергия, назначенная output, вычитается из surplus корпуса;
-   * масса и тип продукта не меняются.
-4. Не допускать scaling от `IndustrialHeat` для профилированных генераторов и Solar Panel.
-5. Сохранить модель аварийного нагрева проводников:
-   * нагревается только объект, которому vanilla damage нанесла повреждение;
-   * мосты обрабатываются так же, как провода;
-   * target равен 90% температуры плавления строительного материала;
-   * отсутствие material/SHC/mass/thermal handle пропускает только дополнительный нагрев.
-6. Очистить default и installed config от удалённых power options.
-7. Обновить README, changelog и implementation notes.
-8. Собрать Release, запустить unit-тесты, установить локальный мод, проверить установленный `mod_info.yaml`.
+Цель: добавить экспериментальные уменьшенные варианты астероидов для новых миров, не меняя vanilla generation при выключенном модуле.
 
-Критерии приёмки:
+Целевые режимы:
 
-* Coal Generator: properties и hover показывают настроенное v0.4 значение тепла.
-* Hydrogen Generator: горячий водород нагревает корпус, а output следует профилю.
-* Natural Gas и Petroleum Generators: горячее топливо влияет на корпус и допустимые выходы, но жидкие продукты не превращаются в пар внутри исправного генератора.
-* Solar Panel: при 298.69 W hover heat примерно `298.69 / 380 * 5 = 3.93 kDTU/s`, static properties остаются `5 kDTU/s`.
-* Wire/bridge overload: один vanilla damage event даёт один значимый тепловой импульс в повреждённый объект.
-* Unit-тесты проходят вне игры.
+```text
+Vanilla
+Half
+Quarter
+```
 
-## Фаза B - 0.5 Superconductive Technology
+`Half` - основной режим 0.7.
 
-Цель: добавить новый материал и провода без зависимости от исключённых механик сопротивления сети.
+`Quarter` - experimental режим, который может быть отключён для отдельных clusters/DLC, если обязательные структуры не помещаются стабильно.
+
+## Фаза A - Worldgen Audit
+
+Роль: Architect / Research.
 
 Задачи:
 
-1. Исследовать текущие API элементов, рецептов, зданий и проводов.
-2. Добавить `SuperconductiveComposite` или безопасный эквивалент, если API игры требует другой registration path.
-3. Добавить рецепт Molecular Forge.
-4. Добавить обычный и high-watt wire variants.
-5. Убедиться, что новые провода участвуют в vanilla overload damage и v0.4 emergency heat.
-6. Добавить RU/EN локализацию.
-7. Добавить тесты для чистых калькуляторов и runtime guards.
+1. Найти игровые YAML/data файлы cluster/world generation.
+2. Определить, как задаются размеры мира, border, стартовая область и biome placement.
+3. Найти способ добавлять новые presets без перезаписи vanilla данных.
+4. Проверить различия base game и Spaced Out.
+5. Найти обязательные структуры:
+   * стартовая область;
+   * geysers;
+   * teleporters;
+   * Temporal Tear;
+   * POI;
+   * story-critical structures;
+   * DLC-specific structures.
+6. Определить, где можно валидировать worldgen data до старта генерации.
+7. Зафиксировать hook points и риски.
 
-Критерии приёмки:
+Артефакт:
 
-* Новый материал производится.
-* Новые провода строятся и подключаются к допустимым сетям.
-* Overload emergency heat работает для новых проводов.
-* В 0.5 не появляются wire resistance, voltage drop или transformer efficiency.
+```text
+docs/v0.7-worldgen-asteroid-size-audit.md
+```
 
-## Фаза C - 0.6 World Temperature
+Переход дальше разрешён только если понятно, можно ли сделать data-only прототип.
 
-Цель: безопасно применять модификаторы температуры мира во время генерации.
+## Фаза B - Data-Only Prototype
 
-Задачи:
-
-1. Исследовать текущие worldgen YAML и runtime generation hooks.
-2. Добавить generation-time temperature offset/multiplier settings.
-3. Сохранять world-generation snapshot, чтобы существующие сохранения не менялись повторно.
-4. Добавить validation и понятный UI-текст о new-game-only поведении.
-5. Добавить тесты settings, snapshot migration и bounds.
-
-Критерии приёмки:
-
-* Новые миры получают настроенное изменение температуры биомов один раз.
-* Существующие миры не меняются повторно после загрузки.
-* Невалидные значения отклоняются до генерации.
-
-## Фаза D - 0.7 Asteroid Sizes
-
-Цель: прототип экспериментальных уменьшенных layout астероидов.
+Роль: Senior Software Engineer.
 
 Задачи:
 
-1. Исследовать текущие cluster layout data и отличия DLC.
-2. Создать Half Spaced Out и Quarter Spaced Out templates.
-3. Проверить обязательные geysers, teleporters, POI и story-critical structures.
-4. Добавить generation diagnostics.
+1. Добавить минимальный `WorldGeneration` модуль или подготовить data registration path, если кодовый модуль пока не нужен.
+2. Создать первый Half preset через YAML/data overrides.
+3. Не менять vanilla presets in-place.
+4. Не менять существующие сохранения.
+5. Не добавлять runtime-сжатие мира.
+6. Добавить config flag:
 
-Критерии приёмки:
+```json
+{
+  "World": {
+    "Enabled": true,
+    "AsteroidSize": "Half"
+  }
+}
+```
 
-* Experimental maps генерируются без отсутствующих обязательных структур.
-* Feature можно отключить без влияния на обычный worldgen.
+7. Убедиться, что `Off` и `Vanilla` полностью сохраняют vanilla generation.
 
-## Фаза E - 0.8 Radiative Heat
+Стоп-условие:
 
-Цель: прототип лучистого переноса тепла в вакууме с жёсткими лимитами производительности.
+Если data-only path невозможен, зафиксировать почему и перейти к отдельному C# prototype design, не внедряя большой Harmony patch сразу.
 
-Задачи:
+## Фаза C - Generation Validator
 
-1. Определить heat sources и receivers.
-2. Использовать line-of-sight или ограниченную spatial processing модель.
-3. Ввести per-tick budget и diagnostics.
-4. Сохранять energy accounting в документированном допуске.
-
-Критерии приёмки:
-
-* Нет full-map scan каждый тик.
-* Long-run performance приемлем на поздних базах.
-
-## Фаза F - 0.9 Fluid Pressure
-
-Цель: реализовать разрушение liquid lock от перепада давления.
+Роль: Reliability & Safety.
 
 Задачи:
 
-1. Определить, что считается liquid lock.
-2. Отслеживать candidate cells через events или bounded periodic checks.
-3. Применять gas/liquid transfer без дублирования массы.
-4. Добавить diagnostics и fail-safe limits.
+1. Проверять bounds до генерации или сразу после сборки worldgen data.
+2. Валидировать:
+   * стартовый биом;
+   * safe spawn area;
+   * world border;
+   * biome template bounds;
+   * обязательные structures;
+   * geysers/POI density;
+   * paired teleporters;
+   * DLC-only content guards.
+3. При ошибке:
+   * не начинать генерацию, если ошибка обнаружена до неё;
+   * показывать понятное предупреждение;
+   * писать diagnostics;
+   * не менять vanilla presets.
 
-Критерии приёмки:
+Артефакт:
 
-* Масса не дублируется.
-* Отключение модуля возвращает vanilla behavior для новых взаимодействий.
+```text
+docs/implementation-note-0.7.0.md
+```
 
-## Фаза G - 1.0 Release Hardening
+## Фаза D - Seed Test Harness
+
+Роль: Test Engineer.
 
 Задачи:
 
-1. Полное save/load тестирование.
-2. Long-run тесты на поздних колониях.
-3. Compatibility review для power, thermal, worldgen и duplicant mods.
-4. Финальный RU/EN localization pass.
-5. Workshop packaging и проверка Mod Updater metadata.
+1. Подготовить ручной или полуавтоматический seed-test журнал.
+2. Для каждого режима прогнать минимум 20-50 seed на этапе прототипа.
+3. Проверить:
+   * base game;
+   * Spaced Out;
+   * разные стартовые астероиды;
+   * установленные DLC;
+   * отсутствие worldgen exception;
+   * наличие обязательных объектов;
+   * создание колонии;
+   * save/load.
 
-Release blockers:
+Формат журнала:
 
-* повторяющиеся exceptions в `Player.log`;
-* corrupt saves;
-* unbounded per-tick work;
-* активные config keys для нереализованных features;
-* tooltip values противоречат фактическому runtime behavior.
+```text
+seed
+world preset
+asteroid size mode
+DLC
+result
+generation time
+exception
+missing entities
+validation errors
+```
+
+## Фаза E - Quarter Experimental
+
+Роль: Architect / Safety.
+
+Задачи:
+
+1. Реализовать Quarter только после рабочего Half.
+2. Проверить, какие clusters могут физически вместить обязательные structures.
+3. Для несовместимых clusters:
+   * отключать режим;
+   * либо показывать explicit experimental warning;
+   * не пытаться автоматически ломать обязательные constraints.
+
+Критерии:
+
+* Quarter не должен ломать vanilla и Half.
+* Quarter может быть помечен experimental даже в релизе 0.7.
+
+## Фаза F - Documentation And Release
+
+Роль: Documentation / Release.
+
+Задачи:
+
+1. Обновить README:
+   * что делает 0.7;
+   * что не делает 0.7;
+   * как включить Half/Quarter;
+   * какие риски у experimental mode.
+2. Обновить changelog.
+3. Обновить `docs/game-api-research.md`.
+4. Собрать Release.
+5. Запустить unit tests.
+6. Установить локальный мод.
+7. Подготовить ручной чеклист проверки в ONI.
+
+## Definition Of Done 0.7
+
+0.7 готова, если:
+
+1. Vanilla generation не меняется при выключенном модуле.
+2. Half mode стабильно создаёт миры на выбранном наборе clusters/seeds.
+3. Quarter mode либо стабилен, либо явно помечен experimental и ограничен по clusters.
+4. Нет runtime-сжатия существующих миров.
+5. Нет перезаписи vanilla worldgen файлов.
+6. Есть diagnostics для неудачной генерации.
+7. Документированы ограничения для base game, Spaced Out и DLC.
+8. Есть понятный rollback: выключение модуля возвращает vanilla worldgen для новых миров.
+
+## Следующие направления после 0.7
+
+После 0.7 остаются только направления, которые всё ещё имеют самостоятельную ценность:
+
+* Radiative Heat Experimental;
+* Fluid Pressure Experimental;
+* release hardening / Workshop packaging.
