@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.5
+
+- Fixed Quarter world generation failure introduced in 0.7.4: `OverworldMinNodes: 24` could abort generation with `World layout with fewer than 24 points`.
+- Quarter keeps the 0.7.4 small-biome footprint tuning, but lowers the hard minimum to `OverworldMinNodes: 1`, matching Klei tiny-world presets.
+
 ## 0.7.4
 
 - Tightened Quarter biome footprint after in-game testing showed average biome regions around 40x60 cells.

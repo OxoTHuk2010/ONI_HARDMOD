@@ -271,7 +271,7 @@ function Set-QuarterDefaultsOverrides($lines) {
     $defaults.Add('    OverworldDensityMax: 90')
     $defaults.Add('    OverworldAvoidRadius: 2')
     $defaults.Add('    OverworldSampleBehaviour: PoissonDisk')
-    $defaults.Add('    OverworldMinNodes: 24')
+    $defaults.Add('    OverworldMinNodes: 1')
     $defaults.Add('    OverworldMaxNodes: 800')
     $defaults.Add('    poiPadding: 1')
 

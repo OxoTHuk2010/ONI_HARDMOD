@@ -21,7 +21,7 @@ defaultsOverrides:
     OverworldDensityMax: 90
     OverworldAvoidRadius: 2
     OverworldSampleBehaviour: PoissonDisk
-    OverworldMinNodes: 24
+    OverworldMinNodes: 1
     OverworldMaxNodes: 800
     poiPadding: 1
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Hardcore Systems is a modular Oxygen Not Included difficulty overhaul. Version 0.7.4 includes the foundation, duplicant/mining gameplay modules, generator rebalance profiles, building heat scaling for non-generators, Solar Panel generation heat, emergency wire/bridge overload heating, experimental asteroid-size worldgen presets, and optional runtime diagnostics.
+Hardcore Systems is a modular Oxygen Not Included difficulty overhaul. Version 0.7.5 includes the foundation, duplicant/mining gameplay modules, generator rebalance profiles, building heat scaling for non-generators, Solar Panel generation heat, emergency wire/bridge overload heating, experimental asteroid-size worldgen presets, and optional runtime diagnostics.
 
 ## Architecture
 
