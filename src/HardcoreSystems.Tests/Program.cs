@@ -2,10 +2,11 @@ using System;
 using HardcoreSystems.Configuration;
 using HardcoreSystems.Modules.DiseaseEffects;
 using HardcoreSystems.Modules.DuplicantBalance;
-using HardcoreSystems.Modules.ElectricalNetworks;
+using HardcoreSystems.Modules.ElectricalOverloadThermalDamage;
 using HardcoreSystems.Modules.GeneratorEfficiency;
 using HardcoreSystems.Modules.IndustrialHeat;
 using HardcoreSystems.Modules.MiningYield;
+using HardcoreSystems.Modules.SolarGeneration;
 
 namespace HardcoreSystems.Tests
 {
@@ -23,7 +24,8 @@ namespace HardcoreSystems.Tests
             TestDiseasePenaltyCalculator();
             TestGeneratorEfficiencyCalculator();
             TestIndustrialHeatCalculator();
-            TestElectricalNetworksCalculators();
+            TestSolarHeatCalculator();
+            TestElectricalOverloadHeatCalculator();
             Console.WriteLine("All tests passed.");
             return 0;
         }
@@ -43,7 +45,13 @@ namespace HardcoreSystems.Tests
             AssertClose(0.25f, settings.Mining.YieldMultiplier, "Hard mining yield");
             AssertClose(0.60f, settings.Duplicants.ExperienceMultiplier, "Hard XP");
             AssertClose(1.25f, settings.Duplicants.CaloriesMultiplier, "Hard calories");
-            AssertClose(0.90f, settings.Power.GeneratorEfficiency, "Hard generator efficiency");
+            Assert(!settings.Power.GeneratorEfficiencyEnabled, "Hard keeps generator efficiency patch inactive");
+            AssertClose(1f, settings.Power.GeneratorEfficiency, "Hard preserves vanilla generator wattage");
+            Assert(!settings.Power.ElectricalLossesEnabled, "Hard keeps electrical losses inactive");
+            Assert(!settings.Power.TransformerEfficiencyEnabled, "Hard keeps transformer efficiency inactive");
+            Assert(settings.Power.SolarPanelGenerationHeatEnabled, "Hard enables solar generation heat");
+            Assert(settings.Power.OverloadHeatEnabled, "Hard enables overload wire heating");
+            AssertClose(0f, settings.Power.WireResistanceMultiplier, "Hard keeps wire resistance inactive");
             Assert(SettingsValidator.Validate(settings).IsValid, "Hard preset validates");
         }
 
@@ -116,21 +124,40 @@ namespace HardcoreSystems.Tests
             AssertClose(0.5f, IndustrialHeatCalculator.CalculatePumpFallbackKilowatts(60f), "Mini gas pump fallback heat");
         }
 
-        private static void TestElectricalNetworksCalculators()
+        private static void TestSolarHeatCalculator()
         {
-            var copperCell = ElectricalLossCalculator.CalculateCellResistanceOhms(1f, 0.75f, 293.15f, 1000f);
-            var hotCopperCell = ElectricalLossCalculator.CalculateCellResistanceOhms(1f, 0.75f, 393.15f, 1000f);
-            AssertClose(0.0015f, copperCell, "Cell resistance uses material factor");
-            AssertClose(0.0021f, hotCopperCell, "Cell resistance uses temperature coefficient");
-            AssertClose(1.5f, ElectricalLossCalculator.CalculateOhmicLossWatts(1000f, copperCell), "Ohmic loss uses current squared");
-            AssertClose(0.985f, ElectricalLossCalculator.CalculateAvailability(1000f, 15f), "Availability is delivered watt ratio");
-            Assert(ElectricalLossCalculator.ShouldPowerConsumer(0.75f, 0, 10), "Brownout duty cycle powers early slots");
-            Assert(!ElectricalLossCalculator.ShouldPowerConsumer(0.75f, 9, 10), "Brownout duty cycle cuts late slots");
-            Assert(!ElectricalLossCalculator.ShouldPowerConsumer(0.49f, 0, 10), "Below half power stays off");
-            AssertClose(300f, ElectricalLossCalculator.CalculateOverloadHeatWatts(2000f, 1000f, 1f), "Overload heat applies above safe wattage");
-            AssertClose(525000f, ElectricalLossCalculator.CalculateShortCircuitImpulseWatts(1), "Short circuit impulse is intentionally large");
-            AssertClose(0.0125f, ElectricalLossCalculator.CalculateTemperatureDelta(1000f, 1f, 0.2f, 400f, 2f), "Electrical wire heat delta");
-            AssertClose(0f, ElectricalLossCalculator.CalculateCellResistanceOhms(0f, 1f, 293.15f, 1000f), "Zero resistance disables loss");
+            AssertClose(0.0, SolarHeatCalculator.CalculateSolarHeatDtuPerSecond(0.0, 380.0, 5000.0), "Solar heat at zero power");
+            AssertClose(1250.0, SolarHeatCalculator.CalculateSolarHeatDtuPerSecond(95.0, 380.0, 5000.0), "Solar heat at 95W");
+            AssertClose(2500.0, SolarHeatCalculator.CalculateSolarHeatDtuPerSecond(190.0, 380.0, 5000.0), "Solar heat at 190W");
+            AssertClose(3750.0, SolarHeatCalculator.CalculateSolarHeatDtuPerSecond(285.0, 380.0, 5000.0), "Solar heat at 285W");
+            AssertClose(5000.0, SolarHeatCalculator.CalculateSolarHeatDtuPerSecond(380.0, 380.0, 5000.0), "Solar heat at 380W");
+            AssertClose(5000.0, SolarHeatCalculator.CalculateSolarHeatDtuPerSecond(500.0, 380.0, 5000.0), "Solar heat clamps above max");
+            AssertClose(0.0, SolarHeatCalculator.CalculateSolarHeatDtuPerSecond(-1.0, 380.0, 5000.0), "Solar heat clamps negative power");
+            AssertClose(0.0, SolarHeatCalculator.CalculateSolarHeatDtuPerSecond(double.NaN, 380.0, 5000.0), "Solar heat ignores NaN");
+            AssertClose(0.0, SolarHeatCalculator.CalculateSolarHeatDtuPerSecond(double.PositiveInfinity, 380.0, 5000.0), "Solar heat ignores infinity");
+            AssertClose(0.0, SolarHeatCalculator.CalculateSolarHeatDtuPerSecond(100.0, 0.0, 5000.0), "Solar heat ignores zero max power");
+            AssertClose(1000.0, SolarHeatCalculator.CalculateEnergyDtu(5000.0, 0.2), "Solar heat scales by delta time");
+        }
+
+        private static void TestElectricalOverloadHeatCalculator()
+        {
+            var copperMeltingKelvin = 1357.77;
+            var coldCopper = OverloadHeatCalculator.CalculateOverloadHeat(300.0, copperMeltingKelvin, 100.0, 0.385);
+            Assert(coldCopper.IsValid, "Cold copper overload heat is valid");
+            Assert(coldCopper.ShouldApply, "Cold copper overload heat applies");
+            AssertClose(copperMeltingKelvin * 0.90, coldCopper.TargetTemperatureKelvin, "Overload target is 90 percent of melting point in Kelvin");
+            AssertClose(100.0 * 0.385 * (copperMeltingKelvin * 0.90 - 300.0), coldCopper.RequiredEnergyDtu, "Overload heat uses mass and SHC");
+
+            var alreadyHot = OverloadHeatCalculator.CalculateOverloadHeat(copperMeltingKelvin, copperMeltingKelvin, 100.0, 0.385);
+            Assert(alreadyHot.IsValid, "Hot wire overload heat is valid");
+            Assert(!alreadyHot.ShouldApply, "Hot wire is not cooled");
+            AssertClose(0.0, alreadyHot.RequiredEnergyDtu, "Hot wire receives no negative energy");
+
+            Assert(!OverloadHeatCalculator.CalculateOverloadHeat(300.0, copperMeltingKelvin, 0.0, 0.385).IsValid, "Zero mass is invalid");
+            Assert(!OverloadHeatCalculator.CalculateOverloadHeat(300.0, copperMeltingKelvin, 100.0, 0.0).IsValid, "Zero SHC is invalid");
+            Assert(!OverloadHeatCalculator.CalculateOverloadHeat(300.0, 0.0, 100.0, 0.385).IsValid, "Invalid melting temperature is rejected");
+            Assert(!OverloadHeatCalculator.CalculateOverloadHeat(double.NaN, copperMeltingKelvin, 100.0, 0.385).IsValid, "NaN is rejected");
+            Assert(!OverloadHeatCalculator.CalculateOverloadHeat(double.PositiveInfinity, copperMeltingKelvin, 100.0, 0.385).IsValid, "Infinity is rejected");
         }
 
         private static void Assert(bool condition, string message)
@@ -144,6 +171,14 @@ namespace HardcoreSystems.Tests
         private static void AssertClose(float expected, float actual, string message)
         {
             if (Math.Abs(expected - actual) > 0.0001f)
+            {
+                throw new InvalidOperationException(message + ": expected " + expected + " actual " + actual);
+            }
+        }
+
+        private static void AssertClose(double expected, double actual, string message)
+        {
+            if (Math.Abs(expected - actual) > 0.0001)
             {
                 throw new InvalidOperationException(message + ": expected " + expected + " actual " + actual);
             }

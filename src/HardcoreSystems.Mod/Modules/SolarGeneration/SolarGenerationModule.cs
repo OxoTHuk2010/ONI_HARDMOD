@@ -2,23 +2,23 @@ using HarmonyLib;
 using HardcoreSystems.Bootstrap;
 using HardcoreSystems.Configuration;
 
-namespace HardcoreSystems.Modules.ElectricalNetworks
+namespace HardcoreSystems.Modules.SolarGeneration
 {
-    public sealed class ElectricalNetworksModule : IGameplayModule
+    public sealed class SolarGenerationModule : IGameplayModule
     {
         public string Id
         {
-            get { return "ElectricalNetworks"; }
+            get { return "SolarGeneration"; }
         }
 
         public bool IsEnabled(ModContext context)
         {
-            return context.Settings.Power.OverloadHeatEnabled;
+            return context.Settings.Power.SolarPanelGenerationHeatEnabled;
         }
 
         public void Initialize(ModContext context)
         {
-            ElectricalNetworksRuntime.Configure(context);
+            SolarGenerationRuntime.Configure(context);
         }
 
         public void RegisterPatches(Harmony harmony, ModContext context)
@@ -27,9 +27,9 @@ namespace HardcoreSystems.Modules.ElectricalNetworks
                 context.Logger,
                 PatchGuard.TryPatch(
                     harmony,
-                    AccessTools.Method(typeof(BuildingHP), "DoDamage", new[] { typeof(int) }),
+                    AccessTools.Method(typeof(SolarPanel), "EnergySim200ms", new[] { typeof(float) }),
                     null,
-                    new HarmonyMethod(typeof(ElectricalNetworksPatches), "BuildingHpDoDamagePostfix"),
+                    new HarmonyMethod(typeof(SolarGenerationPatches), "EnergySim200msPostfix"),
                     Id));
         }
 
@@ -39,17 +39,17 @@ namespace HardcoreSystems.Modules.ElectricalNetworks
 
         public void OnSettingsChanged(ModContext context, ModSettings previous, ModSettings current)
         {
-            ElectricalNetworksRuntime.Configure(context);
+            SolarGenerationRuntime.Configure(context);
         }
 
         public void Shutdown(ModContext context) { }
     }
 
-    internal static class ElectricalNetworksPatches
+    internal static class SolarGenerationPatches
     {
-        public static void BuildingHpDoDamagePostfix(BuildingHP __instance, int damage)
+        public static void EnergySim200msPostfix(SolarPanel __instance, float dt)
         {
-            ElectricalNetworksRuntime.ApplyDamageHeat(__instance);
+            SolarGenerationRuntime.ApplyGenerationHeat(__instance, dt);
         }
     }
 }

@@ -38,8 +38,12 @@ namespace HardcoreSystems.Configuration
         private static void ApplyRuntimeModules(ModSettings settings, bool enabled)
         {
             settings.Mining.Enabled = enabled;
-            settings.Power.GeneratorEfficiencyEnabled = enabled;
-            settings.Power.ElectricalLossesEnabled = enabled;
+            settings.Power.GeneratorRebalanceEnabled = false;
+            settings.Power.FuelThermalAccountingEnabled = false;
+            settings.Power.SolarPanelGenerationHeatEnabled = enabled;
+            settings.Power.ElectricalDiagnosticsEnabled = false;
+            settings.Power.GeneratorEfficiencyEnabled = false;
+            settings.Power.ElectricalLossesEnabled = false;
             settings.Power.TransformerEfficiencyEnabled = false;
             settings.Power.OverloadHeatEnabled = enabled;
             settings.IndustrialHeat.Enabled = enabled;
@@ -60,9 +64,9 @@ namespace HardcoreSystems.Configuration
             settings.Duplicants.ExperienceMultiplier = experience;
             settings.Duplicants.CaloriesMultiplier = calories;
             settings.Diseases.SeverityMultiplier = diseaseSeverity;
-            settings.Power.GeneratorEfficiency = transformerEfficiency;
-            settings.Power.TransformerEfficiency = transformerEfficiency;
-            settings.Power.WireResistanceMultiplier = wireResistance;
+            settings.Power.GeneratorEfficiency = 1f;
+            settings.Power.TransformerEfficiency = 1f;
+            settings.Power.WireResistanceMultiplier = 0f;
             settings.IndustrialHeat.HeatMultiplier = 1f + wireResistance;
         }
     }

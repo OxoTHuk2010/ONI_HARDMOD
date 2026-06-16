@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.4.3
+
+- Added the v0.4 research-layer split for `SolarGeneration` and `ElectricalOverloadThermalDamage`.
+- Added Solar Panel generation heat: `SolarPanel.EnergySim200ms(float)` is patched and `SolarPanel.CurrentWattage` drives 0-5 kDTU/s heat from 0-380 W.
+- Reworked overload wire heating to use `BuildingHP` overload damage metadata, wire/bridge conductor detection, material `Element.highTemp`, mass, and SHC.
+- Replaced direct wire temperature assignment with energy injection through ONI building thermal simulation when a structure-temperature sim handle is available.
+- Corrected overload target formula to `0.90 * meltingTemperatureK`, matching the v0.4 TODO.
+- Added event deduplication per damaged object and frame.
+- Added pure `SolarHeatCalculator` and `OverloadHeatCalculator` tests for the required v0.4 cases.
+- Added `docs/v0.4-generator-runtime-audit.md` and `docs/v0.4-electrical-overload-audit.md`.
+- Generator thermal rebalance remains in research/planning state; generator wattage and fuel/product behavior are unchanged in 0.4.3.
+
+## 0.4.2
+
+- Re-scoped Electrical Networks to only handle emergency thermal behavior on damaged wires and wire bridges.
+- Removed active wire resistance, length-based losses, voltage-drop, brownout, and transformer-efficiency behavior.
+- Disabled the active generator output reduction module for the v0.4 concept; generator wattage now stays vanilla unless a later generator thermal rebalance explicitly changes it.
+- Damaged `Wire` and `WireUtilityNetworkLink` buildings now heat to 90% of their construction material melting point measured in Celsius, capped below the phase transition temperature.
+- Presets no longer enable generator efficiency, electrical losses, or transformer efficiency; old config fields remain for compatibility.
+
 ## 0.4.1
 
 - Reworked Electrical Networks around path-based losses instead of whole-circuit loss sampling.

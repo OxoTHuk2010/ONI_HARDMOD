@@ -4,6 +4,10 @@ namespace HardcoreSystems.Configuration
     {
         public PowerSettings()
         {
+            GeneratorRebalanceEnabled = false;
+            FuelThermalAccountingEnabled = false;
+            SolarPanelGenerationHeatEnabled = false;
+            ElectricalDiagnosticsEnabled = false;
             GeneratorEfficiencyEnabled = false;
             ElectricalLossesEnabled = false;
             TransformerEfficiencyEnabled = false;
@@ -13,6 +17,10 @@ namespace HardcoreSystems.Configuration
             WireResistanceMultiplier = 0f;
         }
 
+        public bool GeneratorRebalanceEnabled { get; set; }
+        public bool FuelThermalAccountingEnabled { get; set; }
+        public bool SolarPanelGenerationHeatEnabled { get; set; }
+        public bool ElectricalDiagnosticsEnabled { get; set; }
         public bool GeneratorEfficiencyEnabled { get; set; }
         public bool ElectricalLossesEnabled { get; set; }
         public bool TransformerEfficiencyEnabled { get; set; }
