@@ -40,6 +40,15 @@ namespace HardcoreSystems.Modules.SolarGeneration
                     new HarmonyMethod(typeof(SolarGenerationPatches), "EffectDescriptorsPrefix"),
                     new HarmonyMethod(typeof(SolarGenerationPatches), "EffectDescriptorsPostfix"),
                     Id));
+
+            ModulePatchReporter.Log(
+                context.Logger,
+                PatchGuard.TryPatch(
+                    harmony,
+                    AccessTools.PropertyGetter(typeof(StructureTemperaturePayload), "TotalEnergyProducedKW"),
+                    null,
+                    new HarmonyMethod(typeof(SolarGenerationPatches), "TotalEnergyProducedPostfix"),
+                    Id));
         }
 
         public void OnGameStarted(ModContext context) { }
@@ -79,6 +88,11 @@ namespace HardcoreSystems.Modules.SolarGeneration
             {
                 def.SelfHeatKilowattsWhenActive = __state;
             }
+        }
+
+        public static void TotalEnergyProducedPostfix(StructureTemperaturePayload __instance, ref float __result)
+        {
+            SolarGenerationRuntime.ApplyToTotalEnergyProduced(__instance, ref __result);
         }
     }
 }

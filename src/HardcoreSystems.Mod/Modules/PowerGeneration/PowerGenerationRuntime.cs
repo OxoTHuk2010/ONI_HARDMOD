@@ -8,6 +8,7 @@ namespace HardcoreSystems.Modules.PowerGeneration
 {
     internal static class PowerGenerationRuntime
     {
+        private static readonly Dictionary<int, FuelThermalState> ActiveFuelStates = new Dictionary<int, FuelThermalState>();
         private static ModLogger logger;
 
         public static bool Enabled { get; private set; }
@@ -120,7 +121,14 @@ namespace HardcoreSystems.Modules.PowerGeneration
                     state.Samples.Add(new FuelThermalSample(input.tag, massBefore, temperature, specificHeatCapacity));
                 }
 
-                return state.HasSamples ? state : null;
+                if (state.HasSamples)
+                {
+                    ActiveFuelStates[generator.gameObject.GetInstanceID()] = state;
+                    return state;
+                }
+
+                ActiveFuelStates.Remove(generator.gameObject.GetInstanceID());
+                return null;
             }
             catch (Exception)
             {
@@ -170,6 +178,13 @@ namespace HardcoreSystems.Modules.PowerGeneration
                 DiagnosticsRuntime.Record("PowerGenerationRuntimeHeat", start, 0, 0, 1);
                 logger.RateLimitedWarning("power_generation_runtime_heat_failed", "power_generation_runtime_heat_failed", "Power generator runtime heat patch failed and was skipped.");
             }
+            finally
+            {
+                if (component != null)
+                {
+                    ActiveFuelStates.Remove(component.gameObject.GetInstanceID());
+                }
+            }
         }
 
         public static float ApplyToDescriptorWattage(BuildingDef def, float watts)
@@ -205,6 +220,156 @@ namespace HardcoreSystems.Modules.PowerGeneration
             return 0f;
         }
 
+        public static void ApplyToTotalEnergyProduced(StructureTemperaturePayload payload, ref float kilowatts)
+        {
+            PowerGenerationProfile profile;
+            if (!Enabled
+                || payload.building == null
+                || payload.operational == null
+                || !payload.operational.IsActive
+                || !PowerGenerationProfileRegistry.TryGet(payload.building.Def.PrefabID, out profile))
+            {
+                return;
+            }
+
+            kilowatts = profile.BodyHeatKilowatts;
+        }
+
+        public static void ApplyToGeneratorOutputTemperature(EnergyGenerator generator, ref EnergyGenerator.OutputItem output, float deltaTimeSeconds, PrimaryElement rootElement)
+        {
+            try
+            {
+                if (!Enabled || generator == null || deltaTimeSeconds <= 0f)
+                {
+                    return;
+                }
+
+                PowerGenerationProfile profile;
+                if (!TryGetProfile(generator.gameObject, out profile) || !profile.AccountsFuelTemperature)
+                {
+                    return;
+                }
+
+                FuelThermalState state;
+                if (!ActiveFuelStates.TryGetValue(generator.gameObject.GetInstanceID(), out state) || state == null || !state.HasSamples)
+                {
+                    return;
+                }
+
+                var element = ElementLoader.FindElementByHash(output.element);
+                if (element == null || (!element.IsGas && !element.IsLiquid))
+                {
+                    return;
+                }
+
+                if (output.store)
+                {
+                    return;
+                }
+
+                var targetTemperature = CalculateSafeOutputTemperature(element, state.MaximumTemperatureKelvin);
+                var currentTemperature = rootElement == null
+                    ? output.minTemperature
+                    : Math.Max(rootElement.Temperature, output.minTemperature);
+                if (targetTemperature <= currentTemperature)
+                {
+                    return;
+                }
+
+                var outputMass = output.creationRate * deltaTimeSeconds;
+                var outputEnergyDtu = PowerGenerationHeatCalculator.CalculateOutputHeatDtu(
+                    outputMass,
+                    element.specificHeatCapacity,
+                    currentTemperature,
+                    targetTemperature);
+                state.AddOutputEnergyAssigned(outputEnergyDtu);
+                output.minTemperature = targetTemperature;
+            }
+            catch (Exception)
+            {
+                logger.RateLimitedWarning("power_generation_output_temperature_failed", "power_generation_output_temperature_failed", "Power generator output temperature patch failed and was skipped.");
+            }
+        }
+
+        public static void ApplyToStoredGeneratorOutputTemperature(EnergyGenerator generator, EnergyGenerator.OutputItem output)
+        {
+            try
+            {
+                if (!Enabled || generator == null || !output.store)
+                {
+                    return;
+                }
+
+                PowerGenerationProfile profile;
+                if (!TryGetProfile(generator.gameObject, out profile) || !profile.AccountsFuelTemperature)
+                {
+                    return;
+                }
+
+                FuelThermalState state;
+                if (!ActiveFuelStates.TryGetValue(generator.gameObject.GetInstanceID(), out state) || state == null || !state.HasSamples)
+                {
+                    return;
+                }
+
+                var element = ElementLoader.FindElementByHash(output.element);
+                if (element == null || (!element.IsGas && !element.IsLiquid))
+                {
+                    return;
+                }
+
+                var storage = generator.GetComponent<Storage>();
+                if (storage == null)
+                {
+                    return;
+                }
+
+                var targetTemperature = CalculateSafeOutputTemperature(element, state.MaximumTemperatureKelvin);
+                if (targetTemperature <= 0f)
+                {
+                    return;
+                }
+
+                var items = storage.GetItems();
+                if (items == null || items.Count == 0)
+                {
+                    return;
+                }
+
+                for (var i = 0; i < items.Count; i++)
+                {
+                    var item = items[i];
+                    if (item == null)
+                    {
+                        continue;
+                    }
+
+                    var primary = item.GetComponent<PrimaryElement>();
+                    if (primary == null || primary.Element == null || primary.Element.id != output.element || primary.Mass <= 0f)
+                    {
+                        continue;
+                    }
+
+                    if (targetTemperature <= primary.Temperature)
+                    {
+                        continue;
+                    }
+
+                    var outputEnergyDtu = PowerGenerationHeatCalculator.CalculateOutputHeatDtu(
+                        primary.Mass,
+                        primary.Element.specificHeatCapacity,
+                        primary.Temperature,
+                        targetTemperature);
+                    state.AddOutputEnergyAssigned(outputEnergyDtu);
+                    primary.Temperature = targetTemperature;
+                }
+            }
+            catch (Exception)
+            {
+                logger.RateLimitedWarning("power_generation_stored_output_temperature_failed", "power_generation_stored_output_temperature_failed", "Power generator stored output temperature patch failed and was skipped.");
+            }
+        }
+
         public static bool ShouldOwnGeneratorHeat(BuildingDef def)
         {
             return Enabled && PowerGenerationProfileRegistry.IsProfiledGenerator(def);
@@ -237,7 +402,28 @@ namespace HardcoreSystems.Modules.PowerGeneration
                     body.Temperature);
             }
 
-            return energyDtu;
+            return Math.Max(0.0, energyDtu - state.OutputEnergyAssignedDtu);
+        }
+
+        private static float CalculateSafeOutputTemperature(Element outputElement, float fuelTemperatureKelvin)
+        {
+            if (outputElement == null || fuelTemperatureKelvin <= 0f)
+            {
+                return 0f;
+            }
+
+            if (!outputElement.IsLiquid)
+            {
+                return fuelTemperatureKelvin;
+            }
+
+            var phaseChangeTemperature = outputElement.highTemp;
+            if (float.IsNaN(phaseChangeTemperature) || float.IsInfinity(phaseChangeTemperature) || phaseChangeTemperature <= 1f)
+            {
+                return fuelTemperatureKelvin;
+            }
+
+            return Math.Min(fuelTemperatureKelvin, phaseChangeTemperature - 1f);
         }
 
         private static bool TryGetStoredFuelThermalData(Storage storage, Tag tag, out float temperatureKelvin, out float specificHeatCapacity)

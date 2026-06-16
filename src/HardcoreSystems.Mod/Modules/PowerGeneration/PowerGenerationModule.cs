@@ -54,9 +54,27 @@ namespace HardcoreSystems.Modules.PowerGeneration
                 context.Logger,
                 PatchGuard.TryPatch(
                     harmony,
+                    AccessTools.PropertyGetter(typeof(StructureTemperaturePayload), "TotalEnergyProducedKW"),
+                    null,
+                    new HarmonyMethod(typeof(PowerGenerationPatches), "TotalEnergyProducedPostfix"),
+                    Id));
+
+            ModulePatchReporter.Log(
+                context.Logger,
+                PatchGuard.TryPatch(
+                    harmony,
                     AccessTools.Method(typeof(EnergyGenerator), "EnergySim200ms", new[] { typeof(float) }),
                     new HarmonyMethod(typeof(PowerGenerationPatches), "EnergyGeneratorSimPrefix"),
                     new HarmonyMethod(typeof(PowerGenerationPatches), "EnergyGeneratorSimPostfix"),
+                    Id));
+
+            ModulePatchReporter.Log(
+                context.Logger,
+                PatchGuard.TryPatch(
+                    harmony,
+                    AccessTools.Method(typeof(EnergyGenerator), "Emit", new[] { typeof(EnergyGenerator.OutputItem), typeof(float), typeof(PrimaryElement) }),
+                    new HarmonyMethod(typeof(PowerGenerationPatches), "EmitPrefix"),
+                    new HarmonyMethod(typeof(PowerGenerationPatches), "EmitPostfix"),
                     Id));
 
             ModulePatchReporter.Log(
@@ -148,6 +166,21 @@ namespace HardcoreSystems.Modules.PowerGeneration
         public static void ExhaustKilowattsPostfix(StructureTemperaturePayload __instance, ref float __result)
         {
             PowerGenerationRuntime.ApplyToExhaustKilowatts(__instance, ref __result);
+        }
+
+        public static void TotalEnergyProducedPostfix(StructureTemperaturePayload __instance, ref float __result)
+        {
+            PowerGenerationRuntime.ApplyToTotalEnergyProduced(__instance, ref __result);
+        }
+
+        public static void EmitPrefix(EnergyGenerator __instance, ref EnergyGenerator.OutputItem output, float dt, PrimaryElement root_pe)
+        {
+            PowerGenerationRuntime.ApplyToGeneratorOutputTemperature(__instance, ref output, dt, root_pe);
+        }
+
+        public static void EmitPostfix(EnergyGenerator __instance, EnergyGenerator.OutputItem output)
+        {
+            PowerGenerationRuntime.ApplyToStoredGeneratorOutputTemperature(__instance, output);
         }
     }
 

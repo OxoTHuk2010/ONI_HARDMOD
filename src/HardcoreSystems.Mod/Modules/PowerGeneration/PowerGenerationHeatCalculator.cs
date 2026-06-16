@@ -42,5 +42,29 @@ namespace HardcoreSystems.Modules.PowerGeneration
             var delta = Math.Max(0.0, fuelTemperatureKelvin - bodyTemperatureKelvin);
             return consumedMassKilograms * 1000.0 * specificHeatCapacity * delta;
         }
+
+        public static double CalculateOutputHeatDtu(
+            double outputMassKilograms,
+            double specificHeatCapacity,
+            double fromTemperatureKelvin,
+            double toTemperatureKelvin)
+        {
+            if (double.IsNaN(outputMassKilograms)
+                || double.IsInfinity(outputMassKilograms)
+                || double.IsNaN(specificHeatCapacity)
+                || double.IsInfinity(specificHeatCapacity)
+                || double.IsNaN(fromTemperatureKelvin)
+                || double.IsInfinity(fromTemperatureKelvin)
+                || double.IsNaN(toTemperatureKelvin)
+                || double.IsInfinity(toTemperatureKelvin)
+                || outputMassKilograms <= 0.0
+                || specificHeatCapacity <= 0.0)
+            {
+                return 0.0;
+            }
+
+            var delta = Math.Max(0.0, toTemperatureKelvin - fromTemperatureKelvin);
+            return outputMassKilograms * 1000.0 * specificHeatCapacity * delta;
+        }
     }
 }

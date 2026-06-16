@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.7
+
+- Patched `StructureTemperaturePayload.TotalEnergyProducedKW` for Solar Panel and profiled generators so hover heat matches v0.4 runtime behavior.
+- Solar Panel hover heat now uses current wattage: `CurrentWattage / 380 * 5 kDTU/s`.
+- Profiled generator hover heat now reports the v0.4 body heat profile instead of 0 kDTU/s.
+- Added product temperature correction for profiled fuel generators: direct and stored gas outputs use at least the captured hot fuel temperature; liquid outputs are capped below their phase transition temperature; output-assigned heat is subtracted from body surplus to avoid double counting.
+
 ## 0.4.6
 
 - Fixed `IndustrialHeat` leaking into Solar Panel and profiled generator descriptors.

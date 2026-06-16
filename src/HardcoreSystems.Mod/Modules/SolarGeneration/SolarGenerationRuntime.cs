@@ -64,5 +64,24 @@ namespace HardcoreSystems.Modules.SolarGeneration
 
             return (float)(Profile.MaximumHeatDtuPerSecond / 1000.0);
         }
+
+        public static void ApplyToTotalEnergyProduced(StructureTemperaturePayload payload, ref float kilowatts)
+        {
+            if (!Enabled || payload.building == null || payload.building.Def == null || payload.building.Def.PrefabID != "SolarPanel")
+            {
+                return;
+            }
+
+            var panel = payload.building.GetComponent<SolarPanel>();
+            if (panel == null)
+            {
+                return;
+            }
+
+            kilowatts = (float)(SolarHeatCalculator.CalculateSolarHeatDtuPerSecond(
+                panel.CurrentWattage,
+                Profile.MaximumPowerWatts,
+                Profile.MaximumHeatDtuPerSecond) / 1000.0);
+        }
     }
 }

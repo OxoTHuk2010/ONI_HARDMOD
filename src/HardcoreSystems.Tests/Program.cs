@@ -123,6 +123,10 @@ namespace HardcoreSystems.Tests
             AssertClose(134400.0, PowerGenerationHeatCalculator.CalculateFuelSurplusHeatDtu(0.1, 2.4, 873.15, 313.15), "Fuel surplus heat uses kg to grams conversion");
             AssertClose(0.0, PowerGenerationHeatCalculator.CalculateFuelSurplusHeatDtu(0.1, 2.4, 300.0, 313.15), "Fuel surplus heat does not cool body");
             AssertClose(0.0, PowerGenerationHeatCalculator.CalculateFuelSurplusHeatDtu(0.0, 2.4, 873.15, 313.15), "Fuel surplus heat skips zero mass");
+
+            AssertClose(10000.0, PowerGenerationHeatCalculator.CalculateOutputHeatDtu(0.1, 2.0, 300.0, 350.0), "Output heat uses kg to grams conversion");
+            AssertClose(0.0, PowerGenerationHeatCalculator.CalculateOutputHeatDtu(0.1, 2.0, 350.0, 300.0), "Output heat does not cool products");
+            AssertClose(0.0, PowerGenerationHeatCalculator.CalculateOutputHeatDtu(0.0, 2.0, 300.0, 350.0), "Output heat skips zero mass");
         }
 
         private static void TestPowerGenerationProfiles()
