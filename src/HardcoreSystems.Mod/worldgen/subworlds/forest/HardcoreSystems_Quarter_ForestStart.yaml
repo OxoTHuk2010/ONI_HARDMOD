@@ -1,10 +1,10 @@
 biomeNoise: noise/subworldForest
 temperatureRange: Room
-pdWeight: 0.5
+pdWeight: 0.2
 density:
   min: 10
   max: 15
-avoidRadius: 3
+avoidRadius: 2
 minChildCount: 1
 dontRelaxChildren: false
 sampleBehaviour: PoissonDisk

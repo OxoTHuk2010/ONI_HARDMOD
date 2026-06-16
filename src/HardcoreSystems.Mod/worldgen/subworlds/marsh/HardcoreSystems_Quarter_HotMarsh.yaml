@@ -1,9 +1,10 @@
 biomeNoise: noise/subworldHotMarsh
 temperatureRange: HumanWarm
+pdWeight: 0.2
 density:
   min: 20
   max: 25
-avoidRadius: 3
+avoidRadius: 2
 minChildCount: 1
 extraBiomeChildren: 1
 sampleBehaviour: PoissonDisk

@@ -1,9 +1,10 @@
 biomeNoise: noise/subworldFrozen
 temperatureRange: Chilly
+pdWeight: 0.2
 density:
   min: 10
   max: 15
-avoidRadius: 3
+avoidRadius: 2
 extraBiomeChildren: 4
 sampleBehaviour: PoissonDisk
 biomes:

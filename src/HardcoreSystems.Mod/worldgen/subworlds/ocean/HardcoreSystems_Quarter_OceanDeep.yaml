@@ -3,10 +3,10 @@ temperatureRange: HumanWarm
 density:
   min: 10
   max: 15
-avoidRadius: 3
+avoidRadius: 2
 minChildCount: 1
 sampleBehaviour: PoissonDisk
-pdWeight: 0.5
+pdWeight: 0.2
 biomes:
   - name: biomes/Ocean/Deep
     weight: 2

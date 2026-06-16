@@ -1,10 +1,10 @@
 biomeNoise: noise/Sandstone
 temperatureRange: Cool
-pdWeight: 0.5
+pdWeight: 0.2
 density:
   min: 45
   max: 45
-avoidRadius: 3
+avoidRadius: 2
 doAvoidPoints: false
 dontRelaxChildren: false
 sampleBehaviour: PoissonDisk

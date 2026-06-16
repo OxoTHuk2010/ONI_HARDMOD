@@ -3,12 +3,13 @@ descriptionKey: STRINGS.SUBWORLDS.SANDSTONE.DESCRIPTION
 utilityKey: STRINGS.SUBWORLDS.SANDSTONE.UTILITY
 biomeNoise: expansion1::noise/SandstoneStart
 temperatureRange: Room
+pdWeight: 0.2
 tags:
   - IgnoreCaveOverride
 density:
   min: 10
   max: 20
-avoidRadius: 3
+avoidRadius: 2
 doAvoidPoints: false
 dontRelaxChildren: false
 sampleBehaviour: PoissonDisk

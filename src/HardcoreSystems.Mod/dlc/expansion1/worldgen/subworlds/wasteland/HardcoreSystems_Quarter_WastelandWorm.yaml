@@ -1,11 +1,12 @@
 # Variant with different POIs and one Grubgrub spawns
 biomeNoise: expansion1::noise/subworldWasteland
 temperatureRange: HumanWarm
+pdWeight: 0.2
 minChildCount: 1
 density:
   min: 10
   max: 20
-avoidRadius: 3
+avoidRadius: 2
 doAvoidPoints: false
 dontRelaxChildren: false
 sampleBehaviour: PoissonDisk

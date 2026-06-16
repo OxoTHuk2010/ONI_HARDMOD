@@ -1,10 +1,11 @@
 biomeNoise: noise/OilPockets
 temperatureRange: ExtremelyCold
+pdWeight: 0.2
 minChildCount: 1
 density:
   min: 10
   max: 20
-avoidRadius: 3
+avoidRadius: 2
 sampleBehaviour: PoissonDisk
 biomes:
   - name: expansion1::biomes/Radioactive/Frozen

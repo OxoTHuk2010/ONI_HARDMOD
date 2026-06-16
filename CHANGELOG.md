@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.4
+
+- Tightened Quarter biome footprint after in-game testing showed average biome regions around 40x60 cells.
+- Quarter worlds now force compact PowerTree defaults: `OverworldDensityMin: 80`, `OverworldDensityMax: 90`, `OverworldAvoidRadius: 2`, `OverworldMinNodes: 24`, and `OverworldMaxNodes: 800`.
+- Quarter compact subworlds now use `avoidRadius: 2` and a forced `pdWeight: 0.2` on every generated compact subworld, including subworlds that did not define `pdWeight` in vanilla YAML.
+- Quarter magma/core and space/regolith placement now use `DistanceFromTag` with `minDistance: 0` and `maxDistance: 0` instead of broad `AtTag` replacement, reducing oversized lava and surface bands.
+
 ## 0.7.3
 
 - Reworked `Quarter` world layout rules for playability instead of only generation success.

@@ -110,6 +110,7 @@ function Normalize-GeneratedWorldRules($lines, [bool]$removeWorldTemplateRules) 
 function Normalize-GeneratedSubworldRules($lines) {
     $result = New-Object 'System.Collections.Generic.List[string]'
     $skippingBlock = $false
+    $hasPdWeight = $false
 
     foreach ($line in $lines) {
         if (Is-TopLevelKey $line) {
@@ -121,12 +122,13 @@ function Normalize-GeneratedSubworldRules($lines) {
         }
 
         if ($line -match '^avoidRadius:\s*') {
-            $result.Add('avoidRadius: 3')
+            $result.Add('avoidRadius: 2')
             continue
         }
 
         if ($line -match '^pdWeight:\s*') {
-            $result.Add('pdWeight: 0.5')
+            $hasPdWeight = $true
+            $result.Add('pdWeight: 0.2')
             continue
         }
 
@@ -141,6 +143,18 @@ function Normalize-GeneratedSubworldRules($lines) {
         }
 
         $result.Add($line)
+    }
+
+    if (-not $hasPdWeight) {
+        $insertAt = 1
+        for ($i = 0; $i -lt $result.Count; $i++) {
+            if ($result[$i] -match '^temperatureRange:') {
+                $insertAt = $i + 1
+                break
+            }
+        }
+
+        $result.Insert($insertAt, 'pdWeight: 0.2')
     }
 
     return ,$result
@@ -233,6 +247,56 @@ function Add-SubworldNamesBlock($lines, $refs) {
     }
 }
 
+function Set-QuarterDefaultsOverrides($lines) {
+    $hasEmptyStartingWorldElements = $false
+    foreach ($line in $lines) {
+        if ($line -match '^\s*startingWorldElements:\s*\[\]\s*(#.*)?$') {
+            $hasEmptyStartingWorldElements = $true
+            break
+        }
+    }
+
+    $lines = Remove-TopLevelBlock $lines 'defaultsOverrides'
+    $defaults = New-Object 'System.Collections.Generic.List[string]'
+    $defaults.Add('defaultsOverrides:')
+    if ($hasEmptyStartingWorldElements) {
+        $defaults.Add('  startingWorldElements: [] # remove the algae check')
+    }
+    $defaults.Add('  data:')
+    $defaults.Add('    DrawWorldBorder: true')
+    $defaults.Add('    DrawWorldBorderForce: false')
+    $defaults.Add('    WorldBorderThickness: 5')
+    $defaults.Add('    WorldBorderRange: 1')
+    $defaults.Add('    OverworldDensityMin: 80')
+    $defaults.Add('    OverworldDensityMax: 90')
+    $defaults.Add('    OverworldAvoidRadius: 2')
+    $defaults.Add('    OverworldSampleBehaviour: PoissonDisk')
+    $defaults.Add('    OverworldMinNodes: 24')
+    $defaults.Add('    OverworldMaxNodes: 800')
+    $defaults.Add('    poiPadding: 1')
+
+    $insertAt = -1
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '^layoutMethod:') {
+            $insertAt = $i + 1
+            break
+        }
+    }
+
+    if ($insertAt -lt 0) {
+        $insertAt = [Math]::Min(1, $lines.Count)
+    }
+
+    $lines.Insert($insertAt, '')
+    $insertAt++
+    foreach ($line in $defaults) {
+        $lines.Insert($insertAt, $line)
+        $insertAt++
+    }
+
+    return ,$lines
+}
+
 function Rewrite-QuarterUnknownCellsAllowedSubworlds($lines) {
     $metadata = Get-WorldSubworldRefs $lines
     $refs = $metadata.Refs
@@ -322,8 +386,10 @@ function Rewrite-QuarterUnknownCellsAllowedSubworlds($lines) {
 
     if ($magma.Count -gt 0) {
         $lines.Add('  # Quarter keeps lava/core content to the bottom band only.')
-        $lines.Add('  - tagcommand: AtTag')
+        $lines.Add('  - tagcommand: DistanceFromTag')
         $lines.Add('    tag: AtDepths')
+        $lines.Add('    minDistance: 0')
+        $lines.Add('    maxDistance: 0')
         $lines.Add('    command: Replace')
         $lines.Add('    subworldNames:')
         Add-SubworldNamesBlock $lines $magma
@@ -331,8 +397,10 @@ function Rewrite-QuarterUnknownCellsAllowedSubworlds($lines) {
 
     if ($surface.Count -gt 0) {
         $lines.Add('  # Quarter keeps space/regolith content to the surface band only.')
-        $lines.Add('  - tagcommand: AtTag')
+        $lines.Add('  - tagcommand: DistanceFromTag')
         $lines.Add('    tag: AtSurface')
+        $lines.Add('    minDistance: 0')
+        $lines.Add('    maxDistance: 0')
         $lines.Add('    command: Replace')
         $lines.Add('    subworldNames:')
         Add-SubworldNamesBlock $lines $surface
@@ -446,6 +514,7 @@ function Create-World($sourceRoot, $prefix, $worldName, $spec) {
     }
 
     if ([bool]$spec.CompactSubworlds) {
+        $lines = Set-QuarterDefaultsOverrides $lines
         $lines = Rewrite-QuarterUnknownCellsAllowedSubworlds $lines
         $lines = Add-QuarterWaterTemplateRules $lines ($prefix -ne "")
     }

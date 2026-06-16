@@ -1,11 +1,11 @@
 biomeNoise: noise/subworldFrozen
 temperatureRange: VeryCold
 minChildCount: 1
-pdWeight: 0.5
+pdWeight: 0.2
 density:
   min: 70
   max: 70
-avoidRadius: 3
+avoidRadius: 2
 sampleBehaviour: PoissonDisk
 biomes:
   - name: biomes/Misc/Surface

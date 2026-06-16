@@ -1,9 +1,10 @@
 biomeNoise: noise/subworldOcean
 temperatureRange: HumanHot
+pdWeight: 0.2
 density:
   min: 10
   max: 15
-avoidRadius: 3
+avoidRadius: 2
 minChildCount: 1
 sampleBehaviour: PoissonDisk
 biomes:

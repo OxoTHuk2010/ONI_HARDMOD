@@ -1,9 +1,10 @@
 biomeNoise: expansion1::noise/Swamp
 temperatureRange: Room
+pdWeight: 0.2
 density:
   min: 10
   max: 15
-avoidRadius: 3
+avoidRadius: 2
 extraBiomeChildren: 1
 doAvoidPoints: false
 sampleBehaviour: PoissonDisk

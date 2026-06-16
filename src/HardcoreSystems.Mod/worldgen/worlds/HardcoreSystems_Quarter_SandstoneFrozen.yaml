@@ -8,6 +8,20 @@ worldsize:
   X: 128
   Y: 192
 layoutMethod: PowerTree # Note: We need to add weights to the items in the layer
+
+defaultsOverrides:
+  data:
+    DrawWorldBorder: true
+    DrawWorldBorderForce: false
+    WorldBorderThickness: 5
+    WorldBorderRange: 1
+    OverworldDensityMin: 80
+    OverworldDensityMax: 90
+    OverworldAvoidRadius: 2
+    OverworldSampleBehaviour: PoissonDisk
+    OverworldMinNodes: 24
+    OverworldMaxNodes: 800
+    poiPadding: 1
 #                                in order to use this.
 
 # List all the subworld files to load
@@ -115,16 +129,20 @@ unknownCellsAllowedSubworlds:
       - subworlds/rust/HardcoreSystems_Quarter_RustFrozen
       - subworlds/forest/HardcoreSystems_Quarter_ForestFrozen
   # Quarter keeps lava/core content to the bottom band only.
-  - tagcommand: AtTag
+  - tagcommand: DistanceFromTag
     tag: AtDepths
+    minDistance: 0
+    maxDistance: 0
     command: Replace
     subworldNames:
       - subworlds/magma/HardcoreSystems_Quarter_Bottom
       - subworlds/magma/HardcoreSystems_Quarter_VolcanoHole
       - subworlds/magma/HardcoreSystems_Quarter_SolidMagma
   # Quarter keeps space/regolith content to the surface band only.
-  - tagcommand: AtTag
+  - tagcommand: DistanceFromTag
     tag: AtSurface
+    minDistance: 0
+    maxDistance: 0
     command: Replace
     subworldNames:
       - subworlds/space/HardcoreSystems_Quarter_Space

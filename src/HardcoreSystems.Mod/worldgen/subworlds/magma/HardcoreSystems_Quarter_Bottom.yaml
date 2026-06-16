@@ -1,10 +1,11 @@
 biomeNoise: noise/Generic
 temperatureRange: ExtremelyHot
+pdWeight: 0.2
 minChildCount: 1
 density:
   min: 35
   max: 45
-avoidRadius: 3
+avoidRadius: 2
 sampleBehaviour: PoissonDisk
 biomes:
   - name: biomes/Magma/MagmaBed

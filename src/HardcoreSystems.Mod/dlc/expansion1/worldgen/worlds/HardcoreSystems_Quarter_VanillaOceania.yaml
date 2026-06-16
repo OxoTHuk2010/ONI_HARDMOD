@@ -9,6 +9,20 @@ worldsize:
   X: 120
   Y: 190
 layoutMethod: PowerTree # Note: We need to add weights to the items in the layer
+
+defaultsOverrides:
+  data:
+    DrawWorldBorder: true
+    DrawWorldBorderForce: false
+    WorldBorderThickness: 5
+    WorldBorderRange: 1
+    OverworldDensityMin: 80
+    OverworldDensityMax: 90
+    OverworldAvoidRadius: 2
+    OverworldSampleBehaviour: PoissonDisk
+    OverworldMinNodes: 24
+    OverworldMaxNodes: 800
+    poiPadding: 1
 #                                in order to use this.
 
 # List all the subworld files to load
@@ -112,14 +126,18 @@ unknownCellsAllowedSubworlds:
       - expansion1::subworlds/swamp/HardcoreSystems_Quarter_Swamp
       - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_UraniumSprinkles
   # Quarter keeps lava/core content to the bottom band only.
-  - tagcommand: AtTag
+  - tagcommand: DistanceFromTag
     tag: AtDepths
+    minDistance: 0
+    maxDistance: 0
     command: Replace
     subworldNames:
       - subworlds/magma/HardcoreSystems_Quarter_Bottom
   # Quarter keeps space/regolith content to the surface band only.
-  - tagcommand: AtTag
+  - tagcommand: DistanceFromTag
     tag: AtSurface
+    minDistance: 0
+    maxDistance: 0
     command: Replace
     subworldNames:
       - expansion1::subworlds/space/HardcoreSystems_Quarter_SpaceWithNoBorder

@@ -1,9 +1,10 @@
 biomeNoise: noise/subworldRust
 temperatureRange: Cool
+pdWeight: 0.2
 density:
   min: 10
   max: 15
-avoidRadius: 3
+avoidRadius: 2
 minChildCount: 1
 extraBiomeChildren: 1
 sampleBehaviour: PoissonDisk

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Hardcore Systems is a modular Oxygen Not Included difficulty overhaul. Version 0.7.3 includes the foundation, duplicant/mining gameplay modules, generator rebalance profiles, building heat scaling for non-generators, Solar Panel generation heat, emergency wire/bridge overload heating, experimental asteroid-size worldgen presets, and optional runtime diagnostics.
+Hardcore Systems is a modular Oxygen Not Included difficulty overhaul. Version 0.7.4 includes the foundation, duplicant/mining gameplay modules, generator rebalance profiles, building heat scaling for non-generators, Solar Panel generation heat, emergency wire/bridge overload heating, experimental asteroid-size worldgen presets, and optional runtime diagnostics.
 
 ## Architecture
 
@@ -41,7 +41,7 @@ Validation rejects NaN, infinity, negative values where unsafe, and values outsi
 
 Until the options UI is implemented, enable gameplay by editing `config\hardcore_systems.json` in the installed mod folder. For runtime gameplay testing, enable `Mining`, `Duplicants`, `Diseases`, `Power.GeneratorRebalanceEnabled`, `Power.SolarPanelGenerationHeatEnabled`, `Power.OverloadHeatEnabled`, `IndustrialHeat.Enabled`, and optionally `Diagnostics.Enabled`, then restart ONI.
 
-For v0.7 asteroid-size testing, create a new world and choose one of the generated `Hardcore ... Half` or `Hardcore ... Quarter` clusters. These presets are separate worldgen assets; they do not shrink existing saves or replace vanilla clusters. `Quarter` presets are more experimental: they use compact subworld variants and compact layout rules so starter, lava/core, surface/regolith, and resource biomes do not reserve full-size vanilla regions. Quarter keeps only one optional water-focused geyser/vent placement attempt and avoids mandatory warp, Gravitas, story, and large POI template guarantees.
+For v0.7 asteroid-size testing, create a new world and choose one of the generated `Hardcore ... Half` or `Hardcore ... Quarter` clusters. These presets are separate worldgen assets; they do not shrink existing saves or replace vanilla clusters. `Quarter` presets are more experimental: they target about 25% map area and use compact PowerTree defaults, compact subworld variants, and compact layout rules so starter, lava/core, surface/regolith, and resource biomes do not reserve full-size vanilla regions. Quarter keeps only one optional water-focused geyser/vent placement attempt and avoids mandatory warp, Gravitas, story, and large POI template guarantees.
 
 Current `Power` settings:
 
