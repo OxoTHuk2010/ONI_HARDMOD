@@ -3,7 +3,6 @@ using HardcoreSystems.Configuration;
 using HardcoreSystems.Modules.DiseaseEffects;
 using HardcoreSystems.Modules.DuplicantBalance;
 using HardcoreSystems.Modules.ElectricalOverloadThermalDamage;
-using HardcoreSystems.Modules.GeneratorEfficiency;
 using HardcoreSystems.Modules.IndustrialHeat;
 using HardcoreSystems.Modules.MiningYield;
 using HardcoreSystems.Modules.PowerGeneration;
@@ -23,8 +22,8 @@ namespace HardcoreSystems.Tests
             TestDuplicantBalanceCalculator();
             TestDuplicantRuntimeCalorieDelta();
             TestDiseasePenaltyCalculator();
-            TestGeneratorEfficiencyCalculator();
             TestPowerGenerationProfiles();
+            TestPowerGenerationHeatCalculator();
             TestIndustrialHeatCalculator();
             TestSolarHeatCalculator();
             TestElectricalOverloadHeatCalculator();
@@ -48,14 +47,8 @@ namespace HardcoreSystems.Tests
             AssertClose(0.60f, settings.Duplicants.ExperienceMultiplier, "Hard XP");
             AssertClose(1.25f, settings.Duplicants.CaloriesMultiplier, "Hard calories");
             Assert(settings.Power.GeneratorRebalanceEnabled, "Hard enables v0.4 generator rebalance");
-            Assert(!settings.Power.FuelThermalAccountingEnabled, "Hard leaves fuel thermal accounting inactive until runtime prototype is complete");
-            Assert(!settings.Power.GeneratorEfficiencyEnabled, "Hard keeps legacy generator efficiency patch inactive");
-            AssertClose(1f, settings.Power.GeneratorEfficiency, "Hard preserves vanilla generator wattage");
-            Assert(!settings.Power.ElectricalLossesEnabled, "Hard keeps electrical losses inactive");
-            Assert(!settings.Power.TransformerEfficiencyEnabled, "Hard keeps transformer efficiency inactive");
             Assert(settings.Power.SolarPanelGenerationHeatEnabled, "Hard enables solar generation heat");
             Assert(settings.Power.OverloadHeatEnabled, "Hard enables overload wire heating");
-            AssertClose(0f, settings.Power.WireResistanceMultiplier, "Hard keeps wire resistance inactive");
             Assert(SettingsValidator.Validate(settings).IsValid, "Hard preset validates");
         }
 
@@ -110,13 +103,6 @@ namespace HardcoreSystems.Tests
             Assert(DiseasePenaltyCalculator.SlimelungMoralePenalty(0.80f) == -8, "Insane morale penalty");
         }
 
-        private static void TestGeneratorEfficiencyCalculator()
-        {
-            AssertClose(450f, GeneratorEfficiencyCalculator.Apply(500f, 0.90f), "Generator efficiency scales output");
-            AssertClose(500f, GeneratorEfficiencyCalculator.Apply(500f, 1.50f), "Generator efficiency clamps high");
-            AssertClose(50f, GeneratorEfficiencyCalculator.Apply(500f, 0.01f), "Generator efficiency clamps low");
-        }
-
         private static void TestIndustrialHeatCalculator()
         {
             AssertClose(0.001f, IndustrialHeatCalculator.CalculateTemperatureDelta(1000f, 1f, 0.2f, 400f, 0.5f, 2f), "Industrial heat delta");
@@ -126,6 +112,17 @@ namespace HardcoreSystems.Tests
             AssertClose(2f, IndustrialHeatCalculator.ScaleOperatingKilowatts(2f, 0f), "Industrial heat preserves value for disabled multiplier");
             AssertClose(2f, IndustrialHeatCalculator.CalculatePumpFallbackKilowatts(240f), "Gas pump fallback heat");
             AssertClose(0.5f, IndustrialHeatCalculator.CalculatePumpFallbackKilowatts(60f), "Mini gas pump fallback heat");
+        }
+
+        private static void TestPowerGenerationHeatCalculator()
+        {
+            AssertClose(8000.0, PowerGenerationHeatCalculator.CalculateProfileHeatDtu(40.0, 0.2), "Profile heat converts kDTU/s to DTU per tick");
+            AssertClose(0.0, PowerGenerationHeatCalculator.CalculateProfileHeatDtu(0.0, 0.2), "Profile heat skips zero heat");
+            AssertClose(0.0, PowerGenerationHeatCalculator.CalculateProfileHeatDtu(40.0, 0.0), "Profile heat skips zero dt");
+
+            AssertClose(134400.0, PowerGenerationHeatCalculator.CalculateFuelSurplusHeatDtu(0.1, 2.4, 873.15, 313.15), "Fuel surplus heat uses kg to grams conversion");
+            AssertClose(0.0, PowerGenerationHeatCalculator.CalculateFuelSurplusHeatDtu(0.1, 2.4, 300.0, 313.15), "Fuel surplus heat does not cool body");
+            AssertClose(0.0, PowerGenerationHeatCalculator.CalculateFuelSurplusHeatDtu(0.0, 2.4, 873.15, 313.15), "Fuel surplus heat skips zero mass");
         }
 
         private static void TestPowerGenerationProfiles()

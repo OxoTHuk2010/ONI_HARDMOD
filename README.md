@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Hardcore Systems is a modular Oxygen Not Included difficulty overhaul. Version 0.4.4 includes the foundation, duplicant/mining gameplay modules, generator rebalance profiles, building heat scaling, Solar Panel generation heat, emergency wire/bridge overload heating, and optional runtime diagnostics.
+Hardcore Systems is a modular Oxygen Not Included difficulty overhaul. Version 0.4.5 includes the foundation, duplicant/mining gameplay modules, generator rebalance profiles, building heat scaling for non-generators, Solar Panel generation heat, emergency wire/bridge overload heating, and optional runtime diagnostics.
 
 ## Architecture
 
@@ -39,7 +39,17 @@ Supported presets:
 
 Validation rejects NaN, infinity, negative values where unsafe, and values outside documented ranges.
 
-Until the options UI is implemented, enable gameplay by editing `config\hardcore_systems.json` in the installed mod folder. For v0.4.4 testing, enable `Mining`, `Duplicants`, `Diseases`, `Power.GeneratorRebalanceEnabled`, `Power.SolarPanelGenerationHeatEnabled`, `Power.OverloadHeatEnabled`, `IndustrialHeat.Enabled`, and optionally `Diagnostics.Enabled`, then restart ONI. `Power.GeneratorEfficiencyEnabled`, `Power.GeneratorEfficiency`, `Power.ElectricalLossesEnabled`, `Power.TransformerEfficiencyEnabled`, and `Power.WireResistanceMultiplier` are retained for config compatibility but are not used by v0.4.4 gameplay.
+Until the options UI is implemented, enable gameplay by editing `config\hardcore_systems.json` in the installed mod folder. For v0.4.5 testing, enable `Mining`, `Duplicants`, `Diseases`, `Power.GeneratorRebalanceEnabled`, `Power.SolarPanelGenerationHeatEnabled`, `Power.OverloadHeatEnabled`, `IndustrialHeat.Enabled`, and optionally `Diagnostics.Enabled`, then restart ONI.
+
+Current `Power` settings:
+
+```json
+{
+  "GeneratorRebalanceEnabled": true,
+  "SolarPanelGenerationHeatEnabled": true,
+  "OverloadHeatEnabled": true
+}
+```
 
 ## Usage
 
@@ -66,7 +76,7 @@ Verify load:
 
 ## Safety Model
 
-Gameplay patches are registered through `PatchGuard`. Mining yield patches `WorldDamage.OnDigComplete`; calorie balance uses a runtime `Calories.deltaAttribute` modifier; generator rebalance patches `Generator.WattageRating`, `StructureTemperaturePayload.OperatingKilowatts`, and `Building.EffectDescriptors` for the v0.4 generator profile table. Building heat scaling still patches `StructureTemperaturePayload.OperatingKilowatts`, `StructureTemperaturePayload.ExhaustKilowatts`, and `Building.EffectDescriptors`, but skips generators owned by `PowerGeneration`. Solar heat patches `SolarPanel.EnergySim200ms(float)` and adds heat from `SolarPanel.CurrentWattage` through ONI's building thermal simulation. Electrical overload heating patches `BuildingHP.DoDamage`; it only handles overload damage metadata, checks `Wire`/`WireUtilityNetworkLink`/wire bridge interfaces, calculates energy from material melting point, building mass converted from kg to g, and SHC, then injects energy through `SimMessages.ModifyBuildingEnergy` when the building thermal sim handle is available. The mod does not patch saves directly.
+Gameplay patches are registered through `PatchGuard`. Mining yield patches `WorldDamage.OnDigComplete`; calorie balance uses a runtime `Calories.deltaAttribute` modifier; generator rebalance patches `Generator.WattageRating`, `StructureTemperaturePayload.OperatingKilowatts`, `EnergyGenerator.EnergySim200ms(float)`, `ManualGenerator.EnergySim200ms(float)`, and `Building.EffectDescriptors` for the v0.4 generator profile table. Profiled generator native operating heat is set to zero and their body heat is injected directly through ONI's building thermal API each simulation tick while active. For profiled `EnergyGenerator` buildings, consumed hot fuel also adds surplus heat to the generator body. Building heat scaling still patches `StructureTemperaturePayload.OperatingKilowatts`, `StructureTemperaturePayload.ExhaustKilowatts`, and `Building.EffectDescriptors`, but skips generators owned by `PowerGeneration`. Solar heat patches `SolarPanel.EnergySim200ms(float)` and adds heat from `SolarPanel.CurrentWattage` through ONI's building thermal simulation; its descriptor shows maximum generation heat. Electrical overload heating patches `BuildingHP.DoDamage`; it only handles overload damage metadata, checks `Wire`/`WireUtilityNetworkLink`/wire bridge interfaces, calculates energy from material melting point, building mass converted from kg to g, and SHC, then injects energy through `SimMessages.ModifyBuildingEnergy` when the building thermal sim handle is available. The mod does not patch saves directly.
 
 ## Testing
 
@@ -94,8 +104,9 @@ Workshop packaging is not automated in this stage.
 - If references fail, pass the correct `-OniGameDir`.
 - If the mod does not appear, verify that `mod.yaml`, `mod_info.yaml`, and `HardcoreSystems.Mod.dll` exist in the local mod folder.
 - If ONI logs reference load errors, confirm the game build still ships `0Harmony.dll`, `Assembly-CSharp.dll`, `Assembly-CSharp-firstpass.dll`, `UnityEngine.CoreModule.dll`, and `Newtonsoft.Json.dll`.
-- If generator rebalance is not visible, confirm `Power.GeneratorRebalanceEnabled=true` and test with Coal, Hydrogen, Natural Gas, Petroleum, Wood, Peat, or Manual generators. Steam Turbine, Solar Panel, tidal/reef generators, and dischargers are intentionally excluded from the fuel-generator profile table.
+- If generator rebalance is not visible, confirm `Power.GeneratorRebalanceEnabled=true` and test with Coal, Hydrogen, Natural Gas, Petroleum, Wood, Peat, or Manual generators. Steam Turbine, Solar Panel, tidal/reef generators, and dischargers are intentionally excluded from the fuel-generator profile table. Profiled generators should not inherit `IndustrialHeat.HeatMultiplier`.
 - If building heat scaling is not visible on non-generators, test with a Research Station, Liquid Pump, or Gas Pump, confirm the tooltip heat value changed after restart, and increase `IndustrialHeat.HeatMultiplier` conservatively.
-- If Solar Panel heat is not visible, confirm `Power.SolarPanelGenerationHeatEnabled=true`; test at different light levels and confirm generated heat follows actual wattage.
+- If Solar Panel heat is not visible, confirm `Power.SolarPanelGenerationHeatEnabled=true`; test at different light levels and confirm generated heat follows actual wattage. Static effect descriptors show the maximum 5 kDTU/s value; actual runtime heat is proportional to current wattage.
 - If wire emergency heat is not visible, confirm `Power.OverloadHeatEnabled=true` and test with actual overload damage on a regular wire or a wire bridge.
-- Wire resistance, length-based losses, voltage-drop, consumer brownouts, legacy generator efficiency, and transformer efficiency are intentionally inactive in v0.4.4.
+- Wire resistance, length-based losses, voltage-drop, consumer brownouts, legacy generator efficiency, and transformer efficiency were removed from active configuration in v0.4.5.
+- Hot fuel now adds surplus heat to profiled generator bodies. Generator product temperature correction is not active yet, so emitted water and CO2 still follow vanilla output temperature rules.

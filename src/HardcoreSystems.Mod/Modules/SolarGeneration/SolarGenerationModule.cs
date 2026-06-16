@@ -31,6 +31,15 @@ namespace HardcoreSystems.Modules.SolarGeneration
                     null,
                     new HarmonyMethod(typeof(SolarGenerationPatches), "EnergySim200msPostfix"),
                     Id));
+
+            ModulePatchReporter.Log(
+                context.Logger,
+                PatchGuard.TryPatch(
+                    harmony,
+                    AccessTools.Method(typeof(Building), "EffectDescriptors", new[] { typeof(BuildingDef) }),
+                    new HarmonyMethod(typeof(SolarGenerationPatches), "EffectDescriptorsPrefix"),
+                    new HarmonyMethod(typeof(SolarGenerationPatches), "EffectDescriptorsPostfix"),
+                    Id));
         }
 
         public void OnGameStarted(ModContext context) { }
@@ -50,6 +59,26 @@ namespace HardcoreSystems.Modules.SolarGeneration
         public static void EnergySim200msPostfix(SolarPanel __instance, float dt)
         {
             SolarGenerationRuntime.ApplyGenerationHeat(__instance, dt);
+        }
+
+        public static void EffectDescriptorsPrefix(BuildingDef def, out float __state)
+        {
+            __state = 0f;
+            if (def == null)
+            {
+                return;
+            }
+
+            __state = def.SelfHeatKilowattsWhenActive;
+            def.SelfHeatKilowattsWhenActive = SolarGenerationRuntime.ApplyToDescriptorSelfHeat(def, def.SelfHeatKilowattsWhenActive);
+        }
+
+        public static void EffectDescriptorsPostfix(BuildingDef def, float __state)
+        {
+            if (def != null)
+            {
+                def.SelfHeatKilowattsWhenActive = __state;
+            }
         }
     }
 }

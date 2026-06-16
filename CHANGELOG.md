@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.4.6
+
+- Fixed `IndustrialHeat` leaking into Solar Panel and profiled generator descriptors.
+- Suppressed profiled generator `ExhaustKilowatts` in runtime and descriptor paths so generator heat is no longer `profile body heat + vanilla exhaust heat * IndustrialHeat`.
+- Fixed hot petroleum/ethanol fuel matching by accepting stored items that have the generator input tag, such as `CombustibleLiquid`, instead of requiring exact element tag equality.
+- Expected static effect heat after this change: Solar Panel max 5 kDTU/s, Coal 40 kDTU/s, Hydrogen 32 kDTU/s, Natural Gas 20 kDTU/s, Petroleum 50 kDTU/s.
+
+## 0.4.5
+
+- Removed obsolete active configuration fields for legacy generator efficiency, electrical losses, transformer efficiency, wire resistance, fuel thermal accounting, electrical diagnostics, and overload heat mode.
+- Removed legacy `GeneratorEfficiency` and `ElectricalNetworks` modules from the active source tree.
+- Changed profiled generator body heat to an explicit runtime thermal injection during generator simulation ticks, avoiding reliance on ONI's building heat-exchange registration timing.
+- Suppressed native operating heat for profiled generators so v0.4 generator heat is not mixed with vanilla heat or generic industrial heat scaling.
+- Added minimal fuel thermal accounting for profiled `EnergyGenerator` buildings: heat surplus from consumed hot fuel is added to the generator body without changing product mass or type.
+- Added Solar Panel maximum generation heat to building effect descriptors while keeping actual heat runtime-proportional to generated wattage.
+
 ## 0.4.4
 
 - Added active `PowerGeneration` profiles for the v0.4 generator matrix: Manual, Wood, Coal, Peat, Hydrogen, Natural Gas, and Petroleum generators now report the configured wattage and body heat values.

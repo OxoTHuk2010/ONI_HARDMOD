@@ -33,9 +33,6 @@ namespace HardcoreSystems.Configuration
             Range(settings.Duplicants.ExperienceMultiplier, 0.05f, 10.00f, "Duplicants.ExperienceMultiplier", result);
             Range(settings.Duplicants.CaloriesMultiplier, 0.10f, 10.00f, "Duplicants.CaloriesMultiplier", result);
             Range(settings.Diseases.SeverityMultiplier, 0.00f, 0.95f, "Diseases.SeverityMultiplier", result);
-            Range(settings.Power.GeneratorEfficiency, 0.10f, 1.00f, "Power.GeneratorEfficiency", result);
-            Range(settings.Power.TransformerEfficiency, 0.10f, 1.00f, "Power.TransformerEfficiency", result);
-            Range(settings.Power.WireResistanceMultiplier, 0.00f, 10.00f, "Power.WireResistanceMultiplier", result);
             Range(settings.IndustrialHeat.HeatMultiplier, 0.00f, 10.00f, "IndustrialHeat.HeatMultiplier", result);
             Range(settings.World.TemperatureMultiplier, 0.25f, 4.00f, "World.TemperatureMultiplier", result);
             Range(settings.World.TemperatureOffsetCelsius, -200f, 500f, "World.TemperatureOffsetCelsius", result);

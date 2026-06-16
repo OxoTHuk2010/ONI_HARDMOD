@@ -101,12 +101,6 @@
     <Compile Include="Modules\ElectricalOverloadThermalDamage\OverloadEventDeduplicator.cs" />
     <Compile Include="Modules\ElectricalOverloadThermalDamage\OverloadHeatCalculator.cs" />
     <Compile Include="Modules\ElectricalOverloadThermalDamage\OverloadHeatResult.cs" />
-    <Compile Include="Modules\ElectricalNetworks\ElectricalLossCalculator.cs" />
-    <Compile Include="Modules\ElectricalNetworks\ElectricalNetworksModule.cs" />
-    <Compile Include="Modules\ElectricalNetworks\ElectricalNetworksRuntime.cs" />
-    <Compile Include="Modules\GeneratorEfficiency\GeneratorEfficiencyCalculator.cs" />
-    <Compile Include="Modules\GeneratorEfficiency\GeneratorEfficiencyModule.cs" />
-    <Compile Include="Modules\GeneratorEfficiency\GeneratorEfficiencyRuntime.cs" />
     <Compile Include="Modules\IGameplayModule.cs" />
     <Compile Include="Modules\IndustrialHeat\IndustrialHeatCalculator.cs" />
     <Compile Include="Modules\IndustrialHeat\IndustrialHeatModule.cs" />
@@ -117,6 +111,8 @@
     <Compile Include="Modules\MiningYield\MiningYieldRuntime.cs" />
     <Compile Include="Modules\ModulePatchReporter.cs" />
     <Compile Include="Modules\PowerGeneration\PowerGenerationModule.cs" />
+    <Compile Include="Modules\PowerGeneration\FuelThermalState.cs" />
+    <Compile Include="Modules\PowerGeneration\PowerGenerationHeatCalculator.cs" />
     <Compile Include="Modules\PowerGeneration\PowerGenerationProfile.cs" />
     <Compile Include="Modules\PowerGeneration\PowerGenerationProfileRegistry.cs" />
     <Compile Include="Modules\PowerGeneration\PowerGenerationRuntime.cs" />

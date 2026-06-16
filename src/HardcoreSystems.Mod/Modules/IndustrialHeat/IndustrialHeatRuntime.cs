@@ -63,11 +63,17 @@ namespace HardcoreSystems.Modules.IndustrialHeat
             }
         }
 
-        public static void ApplyToExhaustKilowatts(ref float kilowatts)
+        public static void ApplyToExhaustKilowatts(StructureTemperaturePayload payload, ref float kilowatts)
         {
             var start = DiagnosticsRuntime.Begin();
             try
             {
+                if (ShouldSkipIndustrialHeat(payload.building == null ? null : payload.building.Def))
+                {
+                    DiagnosticsRuntime.Record("IndustrialHeat", start, 0, 1, 0);
+                    return;
+                }
+
                 if (!Enabled || kilowatts <= 0f)
                 {
                     DiagnosticsRuntime.Record("IndustrialHeat", start, 0, 1, 0);
@@ -91,7 +97,7 @@ namespace HardcoreSystems.Modules.IndustrialHeat
                 return selfHeatKilowatts;
             }
 
-            if (PowerGenerationRuntime.ShouldOwnGeneratorHeat(def))
+            if (ShouldSkipIndustrialHeat(def))
             {
                 return selfHeatKilowatts;
             }
@@ -109,14 +115,25 @@ namespace HardcoreSystems.Modules.IndustrialHeat
             return IndustrialHeatCalculator.ScaleOperatingKilowatts(GetPumpFallbackKilowatts(def), HeatMultiplier);
         }
 
-        public static float ApplyToDescriptorExhaustHeat(float heatKilowatts)
+        public static float ApplyToDescriptorExhaustHeat(BuildingDef def, float heatKilowatts)
         {
-            if (!Enabled)
+            if (!Enabled || ShouldSkipIndustrialHeat(def))
             {
                 return heatKilowatts;
             }
 
             return IndustrialHeatCalculator.ScaleOperatingKilowatts(heatKilowatts, HeatMultiplier);
+        }
+
+        private static bool ShouldSkipIndustrialHeat(BuildingDef def)
+        {
+            if (def == null)
+            {
+                return false;
+            }
+
+            return PowerGenerationRuntime.ShouldOwnGeneratorHeat(def)
+                || string.Equals(def.PrefabID, "SolarPanel", StringComparison.OrdinalIgnoreCase);
         }
 
         private static float GetPumpFallbackKilowatts(BuildingDef def)

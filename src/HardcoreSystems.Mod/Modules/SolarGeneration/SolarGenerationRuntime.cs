@@ -54,5 +54,15 @@ namespace HardcoreSystems.Modules.SolarGeneration
                 logger.RateLimitedWarning("solar_generation_heat_failed", "solar_generation_heat_failed", "Solar panel heat patch failed and was skipped.");
             }
         }
+
+        public static float ApplyToDescriptorSelfHeat(BuildingDef def, float selfHeatKilowatts)
+        {
+            if (!Enabled || def == null || def.PrefabID != "SolarPanel")
+            {
+                return selfHeatKilowatts;
+            }
+
+            return (float)(Profile.MaximumHeatDtuPerSecond / 1000.0);
+        }
     }
 }

@@ -45,6 +45,33 @@ namespace HardcoreSystems.Modules.PowerGeneration
                 context.Logger,
                 PatchGuard.TryPatch(
                     harmony,
+                    AccessTools.PropertyGetter(typeof(StructureTemperaturePayload), "ExhaustKilowatts"),
+                    null,
+                    new HarmonyMethod(typeof(PowerGenerationPatches), "ExhaustKilowattsPostfix"),
+                    Id));
+
+            ModulePatchReporter.Log(
+                context.Logger,
+                PatchGuard.TryPatch(
+                    harmony,
+                    AccessTools.Method(typeof(EnergyGenerator), "EnergySim200ms", new[] { typeof(float) }),
+                    new HarmonyMethod(typeof(PowerGenerationPatches), "EnergyGeneratorSimPrefix"),
+                    new HarmonyMethod(typeof(PowerGenerationPatches), "EnergyGeneratorSimPostfix"),
+                    Id));
+
+            ModulePatchReporter.Log(
+                context.Logger,
+                PatchGuard.TryPatch(
+                    harmony,
+                    AccessTools.Method(typeof(ManualGenerator), "EnergySim200ms", new[] { typeof(float) }),
+                    null,
+                    new HarmonyMethod(typeof(PowerGenerationPatches), "ManualGeneratorSimPostfix"),
+                    Id));
+
+            ModulePatchReporter.Log(
+                context.Logger,
+                PatchGuard.TryPatch(
+                    harmony,
                     AccessTools.Method(typeof(Building), "EffectDescriptors", new[] { typeof(BuildingDef) }),
                     new HarmonyMethod(typeof(PowerGenerationPatches), "EffectDescriptorsPrefix"),
                     new HarmonyMethod(typeof(PowerGenerationPatches), "EffectDescriptorsPostfix"),
@@ -75,6 +102,21 @@ namespace HardcoreSystems.Modules.PowerGeneration
             PowerGenerationRuntime.ApplyToOperatingKilowatts(__instance, ref __result);
         }
 
+        public static void EnergyGeneratorSimPrefix(EnergyGenerator __instance, out FuelThermalState __state)
+        {
+            __state = PowerGenerationRuntime.CaptureFuelThermalState(__instance);
+        }
+
+        public static void EnergyGeneratorSimPostfix(EnergyGenerator __instance, float dt, FuelThermalState __state)
+        {
+            PowerGenerationRuntime.ApplyRuntimeHeat(__instance, dt, __state);
+        }
+
+        public static void ManualGeneratorSimPostfix(ManualGenerator __instance, float dt)
+        {
+            PowerGenerationRuntime.ApplyRuntimeHeat(__instance, dt, null);
+        }
+
         public static void EffectDescriptorsPrefix(BuildingDef def, out PowerGenerationDescriptorState __state)
         {
             __state = null;
@@ -85,10 +127,12 @@ namespace HardcoreSystems.Modules.PowerGeneration
 
             __state = new PowerGenerationDescriptorState(
                 def.GeneratorWattageRating,
-                def.SelfHeatKilowattsWhenActive);
+                def.SelfHeatKilowattsWhenActive,
+                def.ExhaustKilowattsWhenActive);
 
             def.GeneratorWattageRating = PowerGenerationRuntime.ApplyToDescriptorWattage(def, def.GeneratorWattageRating);
             def.SelfHeatKilowattsWhenActive = PowerGenerationRuntime.ApplyToDescriptorSelfHeat(def, def.SelfHeatKilowattsWhenActive);
+            def.ExhaustKilowattsWhenActive = PowerGenerationRuntime.ApplyToDescriptorExhaustHeat(def, def.ExhaustKilowattsWhenActive);
         }
 
         public static void EffectDescriptorsPostfix(BuildingDef def, PowerGenerationDescriptorState __state)
@@ -97,19 +141,27 @@ namespace HardcoreSystems.Modules.PowerGeneration
             {
                 def.GeneratorWattageRating = __state.GeneratorWattageRating;
                 def.SelfHeatKilowattsWhenActive = __state.SelfHeatKilowattsWhenActive;
+                def.ExhaustKilowattsWhenActive = __state.ExhaustKilowattsWhenActive;
             }
+        }
+
+        public static void ExhaustKilowattsPostfix(StructureTemperaturePayload __instance, ref float __result)
+        {
+            PowerGenerationRuntime.ApplyToExhaustKilowatts(__instance, ref __result);
         }
     }
 
     internal sealed class PowerGenerationDescriptorState
     {
-        public PowerGenerationDescriptorState(float generatorWattageRating, float selfHeatKilowattsWhenActive)
+        public PowerGenerationDescriptorState(float generatorWattageRating, float selfHeatKilowattsWhenActive, float exhaustKilowattsWhenActive)
         {
             GeneratorWattageRating = generatorWattageRating;
             SelfHeatKilowattsWhenActive = selfHeatKilowattsWhenActive;
+            ExhaustKilowattsWhenActive = exhaustKilowattsWhenActive;
         }
 
         public float GeneratorWattageRating { get; private set; }
         public float SelfHeatKilowattsWhenActive { get; private set; }
+        public float ExhaustKilowattsWhenActive { get; private set; }
     }
 }

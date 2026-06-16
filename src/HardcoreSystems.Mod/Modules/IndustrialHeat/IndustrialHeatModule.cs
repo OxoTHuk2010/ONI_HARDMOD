@@ -72,7 +72,7 @@ namespace HardcoreSystems.Modules.IndustrialHeat
 
         public static void ExhaustKilowattsPostfix(StructureTemperaturePayload __instance, ref float __result)
         {
-            IndustrialHeatRuntime.ApplyToExhaustKilowatts(ref __result);
+            IndustrialHeatRuntime.ApplyToExhaustKilowatts(__instance, ref __result);
         }
 
         public static void EffectDescriptorsPrefix(BuildingDef def, out HeatDescriptorState __state)
@@ -88,7 +88,7 @@ namespace HardcoreSystems.Modules.IndustrialHeat
                 def,
                 def.SelfHeatKilowattsWhenActive,
                 def.ExhaustKilowattsWhenActive);
-            def.ExhaustKilowattsWhenActive = IndustrialHeatRuntime.ApplyToDescriptorExhaustHeat(def.ExhaustKilowattsWhenActive);
+            def.ExhaustKilowattsWhenActive = IndustrialHeatRuntime.ApplyToDescriptorExhaustHeat(def, def.ExhaustKilowattsWhenActive);
         }
 
         public static void EffectDescriptorsPostfix(BuildingDef def, HeatDescriptorState __state)
