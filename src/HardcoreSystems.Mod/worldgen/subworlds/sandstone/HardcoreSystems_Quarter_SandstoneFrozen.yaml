@@ -1,0 +1,31 @@
+biomeNoise: noise/Sandstone
+temperatureRange: Cold
+density:
+  min: 10
+  max: 20
+avoidRadius: 3
+doAvoidPoints: false
+dontRelaxChildren: false
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Sedimentary/Snowy
+    weight: 4
+    tags:
+      - PrickleFlowerSeed
+      - PrickleGrassSeed
+      - HatchBuried  
+      - BasicSingleHarvestPlantSeed
+      - BasicForagePlant
+  - name: biomes/Sedimentary/Metal_CO2
+    weight: 2
+    tags:   
+      - HatchBuried
+      - BasicForagePlantPlanted
+  - name: biomes/Sedimentary/Basic_CO2
+    weight: 1
+    tags:
+      - HatchBuried
+      - BasicForagePlantPlanted
+tags:
+  - IgnoreCaveOverride
+zoneType: Sandstone

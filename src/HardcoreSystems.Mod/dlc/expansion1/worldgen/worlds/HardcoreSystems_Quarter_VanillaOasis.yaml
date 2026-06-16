@@ -1,0 +1,147 @@
+name: Hardcore VanillaOasis Quarter
+description: Hardcore Systems Quarter asteroid-size variant generated from VanillaOasis.
+disableWorldTraits: true
+asteroidIcon: asteroid_vanilla_oasis_kanim
+nameTables: [ FOREST ]
+worldTraitScale: 0.225 # Hardcore Systems v0.7 area-scaled
+worldsize:
+  X: 120
+  Y: 190
+layoutMethod: PowerTree # Note: We need to add weights to the items in the layer
+#                                in order to use this.
+
+defaultsOverrides:
+  startingWorldElements: [] # remove the algae check
+
+# List all the subworld files to load
+subworldFiles:
+  - name: subworlds/forest/HardcoreSystems_Quarter_ForestStart
+  - name: subworlds/forest/HardcoreSystems_Quarter_ForestMiniWater
+    weight: 1.5
+  - name: subworlds/forest/HardcoreSystems_Quarter_ForestMiniOxy
+  - name: subworlds/forest/HardcoreSystems_Quarter_ForestMiniMetal
+  - name: subworlds/sandstone/HardcoreSystems_Quarter_Sandstone
+  - name: subworlds/sandstone/HardcoreSystems_Quarter_Desert
+  - name: subworlds/marsh/HardcoreSystems_Quarter_HotMarsh
+  - name: subworlds/jungle/HardcoreSystems_Quarter_Jungle
+  - name: subworlds/ocean/HardcoreSystems_Quarter_Ocean
+  - name: subworlds/magma/HardcoreSystems_Quarter_Bottom
+  - name: subworlds/oil/HardcoreSystems_Quarter_OilPatch
+  - name: expansion1::subworlds/space/HardcoreSystems_Quarter_SpaceWithNoBorder
+  - name: expansion1::subworlds/space/HardcoreSystems_Quarter_HospitableClassicSurface
+  # Spaced Out biomes
+  - name: expansion1::subworlds/wasteland/HardcoreSystems_Quarter_WastelandBeetle
+  - name: expansion1::subworlds/wasteland/HardcoreSystems_Quarter_WastelandWorm
+  - name: expansion1::subworlds/radioactive/HardcoreSystems_Quarter_UraniumSprinkles
+
+startSubworldName: subworlds/forest/HardcoreSystems_Quarter_ForestStart
+startingBaseTemplate: bases/forestBase
+startingBasePositionHorizontal:
+  min: 0.5
+  max: 0.5
+startingBasePositionVertical:
+  min: 0.46
+  max: 0.46
+
+fixedTraits:
+  - sunlightMed
+  - cosmicRadiationVeryLow
+
+seasons:
+  - ClassicStyleStartMeteorShowers
+  - VanillaOasisMeteorShowers # unused
+
+# Specify where subworlds can spawn. These rules are processed in order and their effects are cumulative.
+
+unknownCellsAllowedSubworlds:
+  # Hardcore Systems Quarter compact fill. Keep every biome pocket small and mixed.
+  - tagcommand: Default
+    command: Replace
+    subworldNames:
+      - subworlds/forest/HardcoreSystems_Quarter_ForestMiniWater
+      - subworlds/forest/HardcoreSystems_Quarter_ForestMiniOxy
+      - subworlds/forest/HardcoreSystems_Quarter_ForestMiniMetal
+      - subworlds/sandstone/HardcoreSystems_Quarter_Sandstone
+      - subworlds/sandstone/HardcoreSystems_Quarter_Desert
+      - subworlds/marsh/HardcoreSystems_Quarter_HotMarsh
+      - subworlds/jungle/HardcoreSystems_Quarter_Jungle
+      - subworlds/ocean/HardcoreSystems_Quarter_Ocean
+      - subworlds/oil/HardcoreSystems_Quarter_OilPatch
+      - expansion1::subworlds/wasteland/HardcoreSystems_Quarter_WastelandBeetle
+      - expansion1::subworlds/wasteland/HardcoreSystems_Quarter_WastelandWorm
+      - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_UraniumSprinkles
+  # Compact ring around the printing pod.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 1
+    maxDistance: 1
+    command: Replace
+    subworldNames:
+      - subworlds/forest/HardcoreSystems_Quarter_ForestMiniWater
+      - subworlds/forest/HardcoreSystems_Quarter_ForestMiniOxy
+      - subworlds/forest/HardcoreSystems_Quarter_ForestMiniMetal
+      - subworlds/sandstone/HardcoreSystems_Quarter_Sandstone
+      - subworlds/sandstone/HardcoreSystems_Quarter_Desert
+  # Keep at least water-capable biomes available near the start without reserving a huge region.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 1
+    maxDistance: 2
+    command: UnionWith
+    subworldNames:
+      - subworlds/forest/HardcoreSystems_Quarter_ForestMiniWater
+      - subworlds/ocean/HardcoreSystems_Quarter_Ocean
+  # Mix all non-surface/non-magma biomes after the starter pocket.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 2
+    maxDistance: 99
+    command: UnionWith
+    subworldNames:
+      - subworlds/forest/HardcoreSystems_Quarter_ForestMiniWater
+      - subworlds/forest/HardcoreSystems_Quarter_ForestMiniOxy
+      - subworlds/forest/HardcoreSystems_Quarter_ForestMiniMetal
+      - subworlds/sandstone/HardcoreSystems_Quarter_Sandstone
+      - subworlds/sandstone/HardcoreSystems_Quarter_Desert
+      - subworlds/marsh/HardcoreSystems_Quarter_HotMarsh
+      - subworlds/jungle/HardcoreSystems_Quarter_Jungle
+      - subworlds/ocean/HardcoreSystems_Quarter_Ocean
+      - subworlds/oil/HardcoreSystems_Quarter_OilPatch
+      - expansion1::subworlds/wasteland/HardcoreSystems_Quarter_WastelandBeetle
+      - expansion1::subworlds/wasteland/HardcoreSystems_Quarter_WastelandWorm
+      - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_UraniumSprinkles
+  # Quarter keeps lava/core content to the bottom band only.
+  - tagcommand: AtTag
+    tag: AtDepths
+    command: Replace
+    subworldNames:
+      - subworlds/magma/HardcoreSystems_Quarter_Bottom
+  # Quarter keeps space/regolith content to the surface band only.
+  - tagcommand: AtTag
+    tag: AtSurface
+    command: Replace
+    subworldNames:
+      - expansion1::subworlds/space/HardcoreSystems_Quarter_SpaceWithNoBorder
+      - expansion1::subworlds/space/HardcoreSystems_Quarter_HospitableClassicSurface
+
+worldTemplateRules:
+  # One optional water-focused geyser/vent for Quarter. TryOne avoids hard generation failures on tight maps.
+  - names:
+      - geysers/steam
+      - geysers/salt_water
+      - geysers/filthy_water
+      - poi/poi_ocean_geyser_saltwater
+      - poi/jungle/geyser_steam
+      - poi/hotmarsh/geyser_steam
+      - expansion1::geysers/slush_salt_water
+    listRule: TryOne
+    priority: 25
+    useRelaxedFiltering: true
+    allowedCellsFilter:
+      - command: Replace
+        tagcommand: DistanceFromTag
+        tag: AtStart
+        minDistance: 1
+        maxDistance: 99
+      - command: ExceptWith
+        zoneTypes: [ Space, MagmaCore ]

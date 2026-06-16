@@ -1,0 +1,15 @@
+name: Hardcore Volcanic Quarter
+description: Separate Hardcore Systems Quarter asteroid-size preset. New worlds only.
+coordinatePrefix: HCS-Q-VOLCA
+forbiddenDlcIds: [EXPANSION1_ID]
+
+clusterCategory: Vanilla
+difficulty: 3
+menuOrder: 160
+
+startWorldIndex: 0
+worldPlacements:
+- world: worlds/HardcoreSystems_Quarter_Volcanic
+  allowedRings:
+    min: 0
+    max: 0

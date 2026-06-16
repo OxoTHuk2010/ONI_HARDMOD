@@ -17,6 +17,7 @@ namespace HardcoreSystems.Tests
             TestOffPresetIsDisabled();
             TestHardPresetValues();
             TestValidationRejectsInvalidNumbers();
+            TestWorldSettingsValidation();
             TestMiningYieldCalculator();
             TestMiningYieldDigTracker();
             TestDuplicantBalanceCalculator();
@@ -59,6 +60,17 @@ namespace HardcoreSystems.Tests
             Assert(!SettingsValidator.Validate(settings).IsValid, "NaN mining yield is invalid");
             settings.Mining.YieldMultiplier = 2f;
             Assert(!SettingsValidator.Validate(settings).IsValid, "Out of range mining yield is invalid");
+        }
+
+        private static void TestWorldSettingsValidation()
+        {
+            var settings = PresetFactory.Create(DifficultyPreset.Custom);
+            settings.World.AsteroidSize = "Half";
+            Assert(SettingsValidator.Validate(settings).IsValid, "Half asteroid size validates");
+            settings.World.AsteroidSize = "Quarter";
+            Assert(SettingsValidator.Validate(settings).IsValid, "Quarter asteroid size validates");
+            settings.World.AsteroidSize = "HalfSpacedOut";
+            Assert(!SettingsValidator.Validate(settings).IsValid, "Obsolete asteroid size is invalid");
         }
 
         private static void TestMiningYieldCalculator()

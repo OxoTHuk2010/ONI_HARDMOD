@@ -1,0 +1,34 @@
+biomeNoise: expansion1::noise/Swamp
+temperatureRange: Room
+density:
+  min: 10
+  max: 15
+avoidRadius: 3
+extraBiomeChildren: 1
+doAvoidPoints: false
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: expansion1::biomes/Swamp/Basic
+    weight: 2
+    tags:
+      - med_Staterpillar
+      - med_WineCups
+      - med_WineCupsSeed
+      - med_SwampHarvestPlantSeed
+      - med_SwampHarvestPlant
+      - med_SwampForagePlant
+      - med_SwampForagePlantPlanted
+  - name: expansion1::biomes/Swamp/Water_CO2
+    weight: 2
+    tags:
+      - med_Pacu
+      - med_SwampForagePlant
+      - med_SwampForagePlantPlanted
+      - med_WineCups
+      - med_WineCupsSeed
+      - med_SwampHarvestPlantSeed
+      - med_SwampHarvestPlant
+tags:
+  - IgnoreCaveOverride
+  - NoGlobalFeatureSpawning
+zoneType: Swamp

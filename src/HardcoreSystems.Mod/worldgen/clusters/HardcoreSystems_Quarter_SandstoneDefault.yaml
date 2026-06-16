@@ -1,0 +1,15 @@
+name: Hardcore SandstoneDefault Quarter
+description: Separate Hardcore Systems Quarter asteroid-size preset. New worlds only.
+coordinatePrefix: HCS-Q-SNDST-A
+#forbiddenDlcIds: [EXPANSION1_ID] # Uncomment when we remove the default cluster
+
+clusterCategory: Vanilla
+difficulty: 0
+menuOrder: 100
+
+startWorldIndex: 0
+worldPlacements:
+- world: worlds/HardcoreSystems_Quarter_SandstoneDefault
+  allowedRings:
+    min: 0
+    max: 0

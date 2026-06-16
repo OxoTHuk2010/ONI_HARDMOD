@@ -11,6 +11,7 @@ using HardcoreSystems.Modules.IndustrialHeat;
 using HardcoreSystems.Modules.MiningYield;
 using HardcoreSystems.Modules.PowerGeneration;
 using HardcoreSystems.Modules.SolarGeneration;
+using HardcoreSystems.Modules.WorldGeneration;
 using HardcoreSystems.Persistence;
 
 namespace HardcoreSystems.Bootstrap
@@ -37,6 +38,10 @@ namespace HardcoreSystems.Bootstrap
                 settings = PresetFactory.Create(DifficultyPreset.Off);
                 store.Save(settings);
             }
+            else
+            {
+                store.Save(settings);
+            }
 
             var compatibility = GameCompatibility.Capture();
             var dlc = DlcDetector.Detect();
@@ -60,6 +65,7 @@ namespace HardcoreSystems.Bootstrap
             registry.Register(new SolarGenerationModule());
             registry.Register(new IndustrialHeatModule());
             registry.Register(new ElectricalOverloadModule());
+            registry.Register(new WorldGenerationModule());
             registry.Initialize(Current);
             registry.RegisterPatches(harmony, Current);
 

@@ -1,0 +1,15 @@
+name: Hardcore SandstoneFrozen Half
+description: Separate Hardcore Systems Half asteroid-size preset. New worlds only.
+coordinatePrefix: HCS-H-S-FRZ
+forbiddenDlcIds: [EXPANSION1_ID]
+
+clusterCategory: Vanilla
+difficulty: 2
+menuOrder: 120
+
+startWorldIndex: 0
+worldPlacements:
+- world: worlds/HardcoreSystems_Half_SandstoneFrozen
+  allowedRings:
+    min: 0
+    max: 0

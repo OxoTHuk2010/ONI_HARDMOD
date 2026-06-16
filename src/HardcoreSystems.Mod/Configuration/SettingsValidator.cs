@@ -34,8 +34,7 @@ namespace HardcoreSystems.Configuration
             Range(settings.Duplicants.CaloriesMultiplier, 0.10f, 10.00f, "Duplicants.CaloriesMultiplier", result);
             Range(settings.Diseases.SeverityMultiplier, 0.00f, 0.95f, "Diseases.SeverityMultiplier", result);
             Range(settings.IndustrialHeat.HeatMultiplier, 0.00f, 10.00f, "IndustrialHeat.HeatMultiplier", result);
-            Range(settings.World.TemperatureMultiplier, 0.25f, 4.00f, "World.TemperatureMultiplier", result);
-            Range(settings.World.TemperatureOffsetCelsius, -200f, 500f, "World.TemperatureOffsetCelsius", result);
+            AsteroidSize(settings.World.AsteroidSize, result);
             Range(settings.FluidPressure.LiquidFillThreshold, 0.01f, 0.50f, "FluidPressure.LiquidFillThreshold", result);
             Range(settings.FluidPressure.SimulationIntervalSeconds, 0.20f, 600f, "FluidPressure.SimulationIntervalSeconds", result);
             Range(settings.RadiativeHeat.SimulationIntervalSeconds, 0.20f, 600f, "RadiativeHeat.SimulationIntervalSeconds", result);
@@ -57,6 +56,18 @@ namespace HardcoreSystems.Configuration
             {
                 result.Add(name + " must be between " + min.ToString("0.###") + " and " + max.ToString("0.###"));
             }
+        }
+
+        private static void AsteroidSize(string value, ValidationResult result)
+        {
+            if (string.Equals(value, "Vanilla", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(value, "Half", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(value, "Quarter", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            result.Add("World.AsteroidSize must be Vanilla, Half, or Quarter");
         }
     }
 }

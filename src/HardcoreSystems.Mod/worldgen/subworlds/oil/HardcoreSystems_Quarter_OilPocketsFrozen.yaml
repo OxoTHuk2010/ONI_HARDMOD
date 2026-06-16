@@ -1,0 +1,19 @@
+biomeNoise: noise/OilPockets
+temperatureRange: VeryCold
+minChildCount: 1
+density:
+  min: 25
+  max: 35
+avoidRadius: 3
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Oil/OilPocketsFrozen
+    weight: 1
+    tags:
+      - CactusPlantSeed
+      - EvilFlowerSeed
+    #overrides:
+    #  massMultiplier: 50
+tags:
+  - IgnoreCaveOverride
+zoneType: OilField

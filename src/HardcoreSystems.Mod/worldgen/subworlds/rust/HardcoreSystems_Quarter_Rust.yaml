@@ -1,0 +1,22 @@
+biomeNoise: noise/subworldRust
+temperatureRange: Cool
+density:
+  min: 10
+  max: 15
+avoidRadius: 3
+minChildCount: 1
+extraBiomeChildren: 1
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Rust/Basic
+    weight: 2
+    tags:
+      - Drecko
+      - BeanPlant
+      - BeanPlantSeed
+      - SaltPlant
+      - SaltPlantSeed
+      - PuftBleachstone
+tags:
+  - IgnoreCaveOverride
+zoneType: Rust

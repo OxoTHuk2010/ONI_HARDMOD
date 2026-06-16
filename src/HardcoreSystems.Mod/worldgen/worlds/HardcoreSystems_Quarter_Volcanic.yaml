@@ -1,0 +1,123 @@
+name: Hardcore Volcanic Quarter
+description: Hardcore Systems Quarter asteroid-size variant generated from Volcanic.
+disableWorldTraits: true
+nameTables:
+  - MAGMA
+asteroidIcon: Asteroid_volcanic
+
+worldTraitScale: 0.25 # Hardcore Systems v0.7 area-scaled
+worldsize:
+  X: 128
+  Y: 192
+layoutMethod: PowerTree # Note: We need to add weights to the items in the layer
+#                                in order to use this.
+
+# List all the subworld files to load
+subworldFiles:
+  - name: subworlds/sandstone/HardcoreSystems_Quarter_SandstoneStart
+  - name: subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniMetal
+  - name: subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniWater
+  - name: subworlds/sandstone/HardcoreSystems_Quarter_Sandstone
+  - name: subworlds/marsh/HardcoreSystems_Quarter_HotMarsh
+  - name: subworlds/jungle/HardcoreSystems_Quarter_Jungle
+  - name: subworlds/frozen/HardcoreSystems_Quarter_Frozen
+  - name: subworlds/ocean/HardcoreSystems_Quarter_Ocean
+  - name: subworlds/magma/HardcoreSystems_Quarter_Bottom
+  - name: subworlds/magma/HardcoreSystems_Quarter_MagmaVent
+    weight: 4
+  - name: subworlds/oil/HardcoreSystems_Quarter_OilPockets
+  - name: subworlds/space/HardcoreSystems_Quarter_Space
+  - name: subworlds/space/HardcoreSystems_Quarter_SurfaceCrags
+    weight: 4
+
+startSubworldName: subworlds/sandstone/HardcoreSystems_Quarter_SandstoneStart
+startingBaseTemplate: bases/sandstoneBase
+
+seasons:
+  - MeteorShowers
+
+
+unknownCellsAllowedSubworlds:
+  # Hardcore Systems Quarter compact fill. Keep every biome pocket small and mixed.
+  - tagcommand: Default
+    command: Replace
+    subworldNames:
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniMetal
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniWater
+      - subworlds/sandstone/HardcoreSystems_Quarter_Sandstone
+      - subworlds/marsh/HardcoreSystems_Quarter_HotMarsh
+      - subworlds/jungle/HardcoreSystems_Quarter_Jungle
+      - subworlds/frozen/HardcoreSystems_Quarter_Frozen
+      - subworlds/ocean/HardcoreSystems_Quarter_Ocean
+      - subworlds/oil/HardcoreSystems_Quarter_OilPockets
+  # Compact ring around the printing pod.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 1
+    maxDistance: 1
+    command: Replace
+    subworldNames:
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniMetal
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniWater
+      - subworlds/sandstone/HardcoreSystems_Quarter_Sandstone
+      - subworlds/frozen/HardcoreSystems_Quarter_Frozen
+  # Keep at least water-capable biomes available near the start without reserving a huge region.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 1
+    maxDistance: 2
+    command: UnionWith
+    subworldNames:
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniWater
+      - subworlds/frozen/HardcoreSystems_Quarter_Frozen
+      - subworlds/ocean/HardcoreSystems_Quarter_Ocean
+  # Mix all non-surface/non-magma biomes after the starter pocket.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 2
+    maxDistance: 99
+    command: UnionWith
+    subworldNames:
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniMetal
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniWater
+      - subworlds/sandstone/HardcoreSystems_Quarter_Sandstone
+      - subworlds/marsh/HardcoreSystems_Quarter_HotMarsh
+      - subworlds/jungle/HardcoreSystems_Quarter_Jungle
+      - subworlds/frozen/HardcoreSystems_Quarter_Frozen
+      - subworlds/ocean/HardcoreSystems_Quarter_Ocean
+      - subworlds/oil/HardcoreSystems_Quarter_OilPockets
+  # Quarter keeps lava/core content to the bottom band only.
+  - tagcommand: AtTag
+    tag: AtDepths
+    command: Replace
+    subworldNames:
+      - subworlds/magma/HardcoreSystems_Quarter_Bottom
+      - subworlds/magma/HardcoreSystems_Quarter_MagmaVent
+  # Quarter keeps space/regolith content to the surface band only.
+  - tagcommand: AtTag
+    tag: AtSurface
+    command: Replace
+    subworldNames:
+      - subworlds/space/HardcoreSystems_Quarter_Space
+      - subworlds/space/HardcoreSystems_Quarter_SurfaceCrags
+
+worldTemplateRules:
+  # One optional water-focused geyser/vent for Quarter. TryOne avoids hard generation failures on tight maps.
+  - names:
+      - geysers/steam
+      - geysers/salt_water
+      - geysers/filthy_water
+      - poi/poi_ocean_geyser_saltwater
+      - poi/jungle/geyser_steam
+      - poi/hotmarsh/geyser_steam
+    listRule: TryOne
+    priority: 25
+    useRelaxedFiltering: true
+    allowedCellsFilter:
+      - command: Replace
+        tagcommand: DistanceFromTag
+        tag: AtStart
+        minDistance: 1
+        maxDistance: 99
+      - command: ExceptWith
+        zoneTypes: [ Space, MagmaCore ]

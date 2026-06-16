@@ -121,6 +121,7 @@
     <Compile Include="Modules\SolarGeneration\SolarHeatCalculator.cs" />
     <Compile Include="Modules\SolarGeneration\SolarPanelProfile.cs" />
     <Compile Include="Modules\Thermal\BuildingThermalAdapter.cs" />
+    <Compile Include="Modules\WorldGeneration\WorldGenerationModule.cs" />
     <Compile Include="ModuleRegistry.cs" />
     <Compile Include="Persistence\ConfigVersion.cs" />
     <Compile Include="Persistence\GlobalConfigStore.cs" />

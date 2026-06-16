@@ -1,0 +1,15 @@
+name: Hardcore Oceania Quarter
+description: Separate Hardcore Systems Quarter asteroid-size preset. New worlds only.
+coordinatePrefix: HCS-Q-OCAN-A
+forbiddenDlcIds: [EXPANSION1_ID]
+
+clusterCategory: Vanilla
+difficulty: 1
+menuOrder: 110
+
+startWorldIndex: 0
+worldPlacements:
+- world: worlds/HardcoreSystems_Quarter_Oceania
+  allowedRings:
+    min: 0
+    max: 0

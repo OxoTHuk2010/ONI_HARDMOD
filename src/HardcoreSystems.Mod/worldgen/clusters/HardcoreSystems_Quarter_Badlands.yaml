@@ -1,0 +1,15 @@
+name: Hardcore Badlands Quarter
+description: Separate Hardcore Systems Quarter asteroid-size preset. New worlds only.
+coordinatePrefix: HCS-Q-BAD-A
+forbiddenDlcIds: [EXPANSION1_ID]
+
+clusterCategory: Vanilla
+difficulty: 4
+menuOrder: 170
+
+startWorldIndex: 0
+worldPlacements:
+- world: worlds/HardcoreSystems_Quarter_Badlands
+  allowedRings:
+    min: 0
+    max: 0

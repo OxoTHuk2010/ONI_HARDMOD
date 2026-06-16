@@ -1,0 +1,30 @@
+biomeNoise: noise/subworldOcean
+temperatureRange: HumanWarm
+density:
+  min: 10
+  max: 15
+avoidRadius: 3
+minChildCount: 1
+extraBiomeChildren: 1
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Ocean/Basic
+    weight: 2
+    tags:
+      - Pacu
+      - Crab
+      - SeaLettuce
+      - SpiceVine
+      - SeaLettuceSeed
+      - SpiceVineSeed
+  - name: biomes/Ocean/Dry
+    weight: .2
+    tags:
+      - Pacu
+      - Crab
+      - SeaLettuceSeed
+      - SpiceVineSeed
+tags:
+  - IgnoreCaveOverride
+  - River
+zoneType: Ocean

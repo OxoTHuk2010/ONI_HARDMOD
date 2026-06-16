@@ -1,0 +1,15 @@
+name: Hardcore ForestHot Half
+description: Separate Hardcore Systems Half asteroid-size preset. New worlds only.
+coordinatePrefix: HCS-H-HTFST-A
+forbiddenDlcIds: [EXPANSION1_ID]
+
+clusterCategory: Vanilla
+difficulty: 5
+menuOrder: 180
+
+startWorldIndex: 0
+worldPlacements:
+- world: worlds/HardcoreSystems_Half_ForestHot
+  allowedRings:
+    min: 0
+    max: 0

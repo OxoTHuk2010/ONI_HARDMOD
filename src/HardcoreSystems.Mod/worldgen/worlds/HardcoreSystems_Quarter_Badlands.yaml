@@ -1,0 +1,121 @@
+name: Hardcore Badlands Quarter
+description: Hardcore Systems Quarter asteroid-size variant generated from Badlands.
+disableWorldTraits: true
+asteroidIcon: Asteroid_badlands
+
+worldTraitScale: 0.25 # Hardcore Systems v0.7 area-scaled
+worldsize:
+  X: 128
+  Y: 192
+layoutMethod: PowerTree
+
+# Notes:
+# minCounts are just enough space to generate guaranteed templates as this is a difficult world
+
+# List all the subworld files to load
+subworldFiles:
+  - name: subworlds/sandstone/HardcoreSystems_Quarter_SandstoneStart
+  - name: subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniMetal
+  - name: subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniWater
+  - name: subworlds/jungle/HardcoreSystems_Quarter_Jungle
+  - name: subworlds/frozen/HardcoreSystems_Quarter_Frozen
+  - name: subworlds/magma/HardcoreSystems_Quarter_Bottom
+  - name: subworlds/oil/HardcoreSystems_Quarter_OilPockets
+  - name: subworlds/space/HardcoreSystems_Quarter_Space
+  - name: subworlds/space/HardcoreSystems_Quarter_Surface
+  - name: subworlds/rust/HardcoreSystems_Quarter_Rust
+  - name: subworlds/barren/HardcoreSystems_Quarter_BarrenGranite
+
+startSubworldName: subworlds/sandstone/HardcoreSystems_Quarter_SandstoneStart
+startingBaseTemplate: bases/sandstoneBase
+startingBasePositionHorizontal:
+  min: 0.4
+  max: 0.5
+startingBasePositionVertical:
+  min: 0.45
+  max: 0.55
+
+seasons:
+  - MeteorShowers
+
+
+unknownCellsAllowedSubworlds:
+  # Hardcore Systems Quarter compact fill. Keep every biome pocket small and mixed.
+  - tagcommand: Default
+    command: Replace
+    subworldNames:
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniMetal
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniWater
+      - subworlds/jungle/HardcoreSystems_Quarter_Jungle
+      - subworlds/frozen/HardcoreSystems_Quarter_Frozen
+      - subworlds/oil/HardcoreSystems_Quarter_OilPockets
+      - subworlds/rust/HardcoreSystems_Quarter_Rust
+      - subworlds/barren/HardcoreSystems_Quarter_BarrenGranite
+  # Compact ring around the printing pod.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 1
+    maxDistance: 1
+    command: Replace
+    subworldNames:
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniMetal
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniWater
+      - subworlds/frozen/HardcoreSystems_Quarter_Frozen
+      - subworlds/barren/HardcoreSystems_Quarter_BarrenGranite
+  # Keep at least water-capable biomes available near the start without reserving a huge region.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 1
+    maxDistance: 2
+    command: UnionWith
+    subworldNames:
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniWater
+      - subworlds/frozen/HardcoreSystems_Quarter_Frozen
+  # Mix all non-surface/non-magma biomes after the starter pocket.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 2
+    maxDistance: 99
+    command: UnionWith
+    subworldNames:
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniMetal
+      - subworlds/sandstone/HardcoreSystems_Quarter_SandstoneMiniWater
+      - subworlds/jungle/HardcoreSystems_Quarter_Jungle
+      - subworlds/frozen/HardcoreSystems_Quarter_Frozen
+      - subworlds/oil/HardcoreSystems_Quarter_OilPockets
+      - subworlds/rust/HardcoreSystems_Quarter_Rust
+      - subworlds/barren/HardcoreSystems_Quarter_BarrenGranite
+  # Quarter keeps lava/core content to the bottom band only.
+  - tagcommand: AtTag
+    tag: AtDepths
+    command: Replace
+    subworldNames:
+      - subworlds/magma/HardcoreSystems_Quarter_Bottom
+  # Quarter keeps space/regolith content to the surface band only.
+  - tagcommand: AtTag
+    tag: AtSurface
+    command: Replace
+    subworldNames:
+      - subworlds/space/HardcoreSystems_Quarter_Space
+      - subworlds/space/HardcoreSystems_Quarter_Surface
+
+worldTemplateRules:
+  # One optional water-focused geyser/vent for Quarter. TryOne avoids hard generation failures on tight maps.
+  - names:
+      - geysers/steam
+      - geysers/salt_water
+      - geysers/filthy_water
+      - poi/poi_ocean_geyser_saltwater
+      - poi/jungle/geyser_steam
+      - poi/hotmarsh/geyser_steam
+    listRule: TryOne
+    priority: 25
+    useRelaxedFiltering: true
+    allowedCellsFilter:
+      - command: Replace
+        tagcommand: DistanceFromTag
+        tag: AtStart
+        minDistance: 1
+        maxDistance: 99
+      - command: ExceptWith
+        zoneTypes: [ Space, MagmaCore ]

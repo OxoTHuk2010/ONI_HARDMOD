@@ -1,0 +1,24 @@
+biomeNoise: noise/subworldForest
+temperatureRange: Room
+density:
+  min: 10
+  max: 15
+avoidRadius: 3
+minChildCount: 1
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Forest/Basic
+    weight: 2
+    tags:
+      - Oxyfern
+      - ForestTree     
+      - BasicSingleHarvestPlant
+      - BasicSingleHarvestPlantSeed
+      - ForestForagePlantPlanted
+      - LightBug
+      - LeafyPlant        
+      - LeafyPlantSeed
+      - Squirrel          
+tags:
+  - IgnoreCaveOverride
+zoneType: Forest

@@ -1,0 +1,15 @@
+name: Hardcore ForestHot Quarter
+description: Separate Hardcore Systems Quarter asteroid-size preset. New worlds only.
+coordinatePrefix: HCS-Q-HTFST-A
+forbiddenDlcIds: [EXPANSION1_ID]
+
+clusterCategory: Vanilla
+difficulty: 5
+menuOrder: 180
+
+startWorldIndex: 0
+worldPlacements:
+- world: worlds/HardcoreSystems_Quarter_ForestHot
+  allowedRings:
+    min: 0
+    max: 0

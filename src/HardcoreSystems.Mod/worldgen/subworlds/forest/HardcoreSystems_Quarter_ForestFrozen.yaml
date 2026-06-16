@@ -1,0 +1,21 @@
+biomeNoise: noise/subworldForest
+temperatureRange: Cold
+density:
+  min: 10
+  max: 15
+avoidRadius: 3
+minChildCount: 1
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Forest/Snowy
+    weight: 2
+    tags:
+      - OxyfernSeed
+      - ForestTree     
+      - ForestTreeSeed
+      - LeafyPlantSeed
+      - BasicSingleHarvestPlantSeed
+      - ForestForagePlantPlanted
+tags:
+  - IgnoreCaveOverride
+zoneType: Forest

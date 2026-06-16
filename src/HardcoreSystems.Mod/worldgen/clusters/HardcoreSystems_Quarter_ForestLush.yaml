@@ -1,0 +1,15 @@
+name: Hardcore ForestLush Quarter
+description: Separate Hardcore Systems Quarter asteroid-size preset. New worlds only.
+coordinatePrefix: HCS-Q-LUSH-A
+forbiddenDlcIds: [EXPANSION1_ID]
+
+clusterCategory: Vanilla
+difficulty: 2
+menuOrder: 140
+
+startWorldIndex: 0
+worldPlacements:
+- world: worlds/HardcoreSystems_Quarter_ForestLush
+  allowedRings:
+    min: 0
+    max: 0

@@ -1,0 +1,15 @@
+name: Hardcore Badlands Half
+description: Separate Hardcore Systems Half asteroid-size preset. New worlds only.
+coordinatePrefix: HCS-H-BAD-A
+forbiddenDlcIds: [EXPANSION1_ID]
+
+clusterCategory: Vanilla
+difficulty: 4
+menuOrder: 170
+
+startWorldIndex: 0
+worldPlacements:
+- world: worlds/HardcoreSystems_Half_Badlands
+  allowedRings:
+    min: 0
+    max: 0

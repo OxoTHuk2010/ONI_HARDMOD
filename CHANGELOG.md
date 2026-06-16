@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.7.3
+
+- Reworked `Quarter` world layout rules for playability instead of only generation success.
+- Quarter worlds now replace inherited full-size `unknownCellsAllowedSubworlds` with compact rules: one small starter ring, mixed mid-biome pockets, magma only at `AtDepths`, and space/regolith only at `AtSurface`.
+- Quarter generated subworlds now use `avoidRadius: 3`; subworlds that define `pdWeight` are reduced to `0.5`, and inherited `overridePower` is removed from Quarter world `subworldFiles`.
+- Quarter now adds one optional water-focused geyser/vent `TryOne` rule instead of inherited guaranteed POI/template blocks, keeping water content possible without making template placement a hard failure.
+
+## 0.7.2
+
+- Reworked generated `Quarter` asteroid presets after in-game tests showed repeatable `TemplateSpawning: Guaranteed placement failure` on quarter-size worlds.
+- Quarter worlds now remove inherited `worldTemplateRules` in addition to world traits, subworld mixing, and min/max subworld count guarantees.
+- Quarter worlds now use generated compact subworld variants with lower placement pressure for start and biome regions.
+- Quarter is still experimental: it prioritizes getting a compact asteroid generated over preserving guaranteed geyser, warp, Gravitas, and story/POI template placement.
+
+## 0.7.1
+
+- Fixed generated reduced-world YAML by removing inherited `minCount`/`maxCount` guarantees from generated `subworldFiles` and `subworldMixingRules`.
+- Disabled inherited world traits and removed generated `subworldMixingRules` from reduced worlds to reduce small-map placement pressure.
+- The previous 0.7.0 assets could fail every generation attempt on small maps with `Could not guarantee minCount of Subworld ...` because vanilla subworld guarantees were too strict for `Half` and especially `Quarter` asteroid sizes.
+- Kept generated clusters separate from vanilla presets and kept Spaced Out classic outer worlds vanilla.
+
+## 0.7.0
+
+- Added experimental data-only asteroid-size presets for new worlds: `Half` and `Quarter`.
+- Generated separate Hardcore Systems worldgen cluster/world YAML files instead of modifying vanilla presets in place.
+- Covered base-game vanilla asteroid starts and Spaced Out classic/vanilla-style starts; SpacedOutStyle mini-clusters remain excluded from automatic shrinking until seed testing.
+- Removed obsolete world temperature fields from the active config model and validator.
+- Added installer support for mod `worldgen` and `dlc` asset directories.
+
 ## 0.4.7
 
 - Patched `StructureTemperaturePayload.TotalEnergyProducedKW` for Solar Panel and profiled generators so hover heat matches v0.4 runtime behavior.

@@ -2,14 +2,14 @@
 
 ## Purpose
 
-Hardcore Systems is a modular Oxygen Not Included difficulty overhaul. Version 0.4.5 includes the foundation, duplicant/mining gameplay modules, generator rebalance profiles, building heat scaling for non-generators, Solar Panel generation heat, emergency wire/bridge overload heating, and optional runtime diagnostics.
+Hardcore Systems is a modular Oxygen Not Included difficulty overhaul. Version 0.7.3 includes the foundation, duplicant/mining gameplay modules, generator rebalance profiles, building heat scaling for non-generators, Solar Panel generation heat, emergency wire/bridge overload heating, experimental asteroid-size worldgen presets, and optional runtime diagnostics.
 
 ## Architecture
 
 - `ModEntry` is the ONI/KMod entry point and delegates startup to `ModBootstrap`.
 - `ModContext` carries stable runtime state: mod identity, paths, settings, DLC data, and logger.
 - `ModuleRegistry` owns gameplay modules and isolates module failures.
-- `MiningYield`, `DuplicantBalance`, `DiseaseEffects`, `PowerGeneration`, `SolarGeneration`, `IndustrialHeat`, and `ElectricalOverloadThermalDamage` are independent gameplay modules. If one patch target is missing, the module logs the failure and the rest of the mod continues loading.
+- `MiningYield`, `DuplicantBalance`, `DiseaseEffects`, `PowerGeneration`, `SolarGeneration`, `IndustrialHeat`, `ElectricalOverloadThermalDamage`, and `WorldGeneration` are independent modules. If one patch target is missing, the module logs the failure and the rest of the mod continues loading.
 - `DiagnosticsRuntime` records optional lightweight module metrics only when diagnostics are enabled.
 - `Configuration` contains DTOs, preset generation, schema versioning, and validation.
 - `Diagnostics` contains structured and rate-limited logging.
@@ -39,7 +39,9 @@ Supported presets:
 
 Validation rejects NaN, infinity, negative values where unsafe, and values outside documented ranges.
 
-Until the options UI is implemented, enable gameplay by editing `config\hardcore_systems.json` in the installed mod folder. For v0.4.7 testing, enable `Mining`, `Duplicants`, `Diseases`, `Power.GeneratorRebalanceEnabled`, `Power.SolarPanelGenerationHeatEnabled`, `Power.OverloadHeatEnabled`, `IndustrialHeat.Enabled`, and optionally `Diagnostics.Enabled`, then restart ONI.
+Until the options UI is implemented, enable gameplay by editing `config\hardcore_systems.json` in the installed mod folder. For runtime gameplay testing, enable `Mining`, `Duplicants`, `Diseases`, `Power.GeneratorRebalanceEnabled`, `Power.SolarPanelGenerationHeatEnabled`, `Power.OverloadHeatEnabled`, `IndustrialHeat.Enabled`, and optionally `Diagnostics.Enabled`, then restart ONI.
+
+For v0.7 asteroid-size testing, create a new world and choose one of the generated `Hardcore ... Half` or `Hardcore ... Quarter` clusters. These presets are separate worldgen assets; they do not shrink existing saves or replace vanilla clusters. `Quarter` presets are more experimental: they use compact subworld variants and compact layout rules so starter, lava/core, surface/regolith, and resource biomes do not reserve full-size vanilla regions. Quarter keeps only one optional water-focused geyser/vent placement attempt and avoids mandatory warp, Gravitas, story, and large POI template guarantees.
 
 Current `Power` settings:
 
@@ -89,7 +91,7 @@ Run the included smoke tests through MSBuild:
 
 ## Deployment
 
-The local install script copies the compiled DLL, manifest files, and localization files into:
+The local install script copies the compiled DLL, manifest files, localization files, and generated worldgen asset directories into:
 
 ```text
 %USERPROFILE%\Documents\Klei\OxygenNotIncluded\mods\Local\ONI.HardcoreSystems
