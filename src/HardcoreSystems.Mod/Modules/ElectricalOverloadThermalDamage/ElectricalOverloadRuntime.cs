@@ -44,7 +44,7 @@ namespace HardcoreSystems.Modules.ElectricalOverloadThermalDamage
                     return;
                 }
 
-                var result = OverloadHeatCalculator.CalculateOverloadHeat(
+                var result = OverloadHeatCalculator.CalculateOverloadHeatFromKilograms(
                     primary.Temperature,
                     meltingTemperature,
                     primary.Mass,

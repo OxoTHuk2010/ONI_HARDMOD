@@ -116,6 +116,10 @@
     <Compile Include="Modules\MiningYield\MiningYieldModule.cs" />
     <Compile Include="Modules\MiningYield\MiningYieldRuntime.cs" />
     <Compile Include="Modules\ModulePatchReporter.cs" />
+    <Compile Include="Modules\PowerGeneration\PowerGenerationModule.cs" />
+    <Compile Include="Modules\PowerGeneration\PowerGenerationProfile.cs" />
+    <Compile Include="Modules\PowerGeneration\PowerGenerationProfileRegistry.cs" />
+    <Compile Include="Modules\PowerGeneration\PowerGenerationRuntime.cs" />
     <Compile Include="Modules\SolarGeneration\SolarGenerationModule.cs" />
     <Compile Include="Modules\SolarGeneration\SolarGenerationRuntime.cs" />
     <Compile Include="Modules\SolarGeneration\SolarHeatCalculator.cs" />

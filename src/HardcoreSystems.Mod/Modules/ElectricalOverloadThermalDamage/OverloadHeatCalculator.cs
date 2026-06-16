@@ -33,5 +33,18 @@ namespace HardcoreSystems.Modules.ElectricalOverloadThermalDamage
             var requiredEnergyDtu = massGrams * specificHeatCapacity * deltaTemperatureKelvin;
             return new OverloadHeatResult(true, targetTemperatureKelvin, requiredEnergyDtu, deltaTemperatureKelvin > 0.0);
         }
+
+        public static OverloadHeatResult CalculateOverloadHeatFromKilograms(
+            double currentTemperatureKelvin,
+            double meltingTemperatureKelvin,
+            double massKilograms,
+            double specificHeatCapacity)
+        {
+            return CalculateOverloadHeat(
+                currentTemperatureKelvin,
+                meltingTemperatureKelvin,
+                massKilograms * 1000.0,
+                specificHeatCapacity);
+        }
     }
 }

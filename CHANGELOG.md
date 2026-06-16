@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.4
+
+- Added active `PowerGeneration` profiles for the v0.4 generator matrix: Manual, Wood, Coal, Peat, Hydrogen, Natural Gas, and Petroleum generators now report the configured wattage and body heat values.
+- Excluded profiled generators from the generic `IndustrialHeat` multiplier so generator heat no longer becomes `vanilla heat * IndustrialHeat.HeatMultiplier`.
+- Fixed emergency overload heat magnitude by converting `PrimaryElement.Mass` from kilograms to grams before applying the v0.4 `mass * SHC * deltaT` formula.
+- Kept Steam Turbine, Solar Panel, tidal/reef generators, and electrobank dischargers outside the fuel-generator profile table.
+- Added tests for generator profiles and runtime overload mass-unit conversion.
+
 ## 0.4.3
 
 - Added the v0.4 research-layer split for `SolarGeneration` and `ElectricalOverloadThermalDamage`.

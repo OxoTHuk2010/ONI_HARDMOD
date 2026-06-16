@@ -1,5 +1,6 @@
 using System;
 using HardcoreSystems.Diagnostics;
+using HardcoreSystems.Modules.PowerGeneration;
 
 namespace HardcoreSystems.Modules.IndustrialHeat
 {
@@ -24,6 +25,12 @@ namespace HardcoreSystems.Modules.IndustrialHeat
             try
             {
                 if (!Enabled)
+                {
+                    DiagnosticsRuntime.Record("IndustrialHeat", start, 0, 1, 0);
+                    return;
+                }
+
+                if (PowerGenerationRuntime.ShouldOwnGeneratorHeat(payload.building == null ? null : payload.building.Def))
                 {
                     DiagnosticsRuntime.Record("IndustrialHeat", start, 0, 1, 0);
                     return;
@@ -80,6 +87,11 @@ namespace HardcoreSystems.Modules.IndustrialHeat
         public static float ApplyToDescriptorSelfHeat(BuildingDef def, float selfHeatKilowatts, float exhaustKilowatts)
         {
             if (!Enabled)
+            {
+                return selfHeatKilowatts;
+            }
+
+            if (PowerGenerationRuntime.ShouldOwnGeneratorHeat(def))
             {
                 return selfHeatKilowatts;
             }

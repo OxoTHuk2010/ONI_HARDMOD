@@ -8,6 +8,7 @@ namespace HardcoreSystems.Configuration
             FuelThermalAccountingEnabled = false;
             SolarPanelGenerationHeatEnabled = false;
             ElectricalDiagnosticsEnabled = false;
+            OverloadHeatMode = "ImmediateTarget";
             GeneratorEfficiencyEnabled = false;
             ElectricalLossesEnabled = false;
             TransformerEfficiencyEnabled = false;
@@ -21,6 +22,7 @@ namespace HardcoreSystems.Configuration
         public bool FuelThermalAccountingEnabled { get; set; }
         public bool SolarPanelGenerationHeatEnabled { get; set; }
         public bool ElectricalDiagnosticsEnabled { get; set; }
+        public string OverloadHeatMode { get; set; }
         public bool GeneratorEfficiencyEnabled { get; set; }
         public bool ElectricalLossesEnabled { get; set; }
         public bool TransformerEfficiencyEnabled { get; set; }

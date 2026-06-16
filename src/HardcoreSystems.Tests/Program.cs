@@ -6,6 +6,7 @@ using HardcoreSystems.Modules.ElectricalOverloadThermalDamage;
 using HardcoreSystems.Modules.GeneratorEfficiency;
 using HardcoreSystems.Modules.IndustrialHeat;
 using HardcoreSystems.Modules.MiningYield;
+using HardcoreSystems.Modules.PowerGeneration;
 using HardcoreSystems.Modules.SolarGeneration;
 
 namespace HardcoreSystems.Tests
@@ -23,6 +24,7 @@ namespace HardcoreSystems.Tests
             TestDuplicantRuntimeCalorieDelta();
             TestDiseasePenaltyCalculator();
             TestGeneratorEfficiencyCalculator();
+            TestPowerGenerationProfiles();
             TestIndustrialHeatCalculator();
             TestSolarHeatCalculator();
             TestElectricalOverloadHeatCalculator();
@@ -45,7 +47,9 @@ namespace HardcoreSystems.Tests
             AssertClose(0.25f, settings.Mining.YieldMultiplier, "Hard mining yield");
             AssertClose(0.60f, settings.Duplicants.ExperienceMultiplier, "Hard XP");
             AssertClose(1.25f, settings.Duplicants.CaloriesMultiplier, "Hard calories");
-            Assert(!settings.Power.GeneratorEfficiencyEnabled, "Hard keeps generator efficiency patch inactive");
+            Assert(settings.Power.GeneratorRebalanceEnabled, "Hard enables v0.4 generator rebalance");
+            Assert(!settings.Power.FuelThermalAccountingEnabled, "Hard leaves fuel thermal accounting inactive until runtime prototype is complete");
+            Assert(!settings.Power.GeneratorEfficiencyEnabled, "Hard keeps legacy generator efficiency patch inactive");
             AssertClose(1f, settings.Power.GeneratorEfficiency, "Hard preserves vanilla generator wattage");
             Assert(!settings.Power.ElectricalLossesEnabled, "Hard keeps electrical losses inactive");
             Assert(!settings.Power.TransformerEfficiencyEnabled, "Hard keeps transformer efficiency inactive");
@@ -124,6 +128,25 @@ namespace HardcoreSystems.Tests
             AssertClose(0.5f, IndustrialHeatCalculator.CalculatePumpFallbackKilowatts(60f), "Mini gas pump fallback heat");
         }
 
+        private static void TestPowerGenerationProfiles()
+        {
+            PowerGenerationProfile profile;
+            Assert(PowerGenerationProfileRegistry.TryGet("Generator", out profile), "Coal generator profile exists");
+            AssertClose(600f, profile.Wattage, "Coal generator wattage");
+            AssertClose(40f, profile.BodyHeatKilowatts, "Coal generator heat");
+
+            Assert(PowerGenerationProfileRegistry.TryGet("HydrogenGenerator", out profile), "Hydrogen generator profile exists");
+            AssertClose(800f, profile.Wattage, "Hydrogen generator wattage");
+            AssertClose(32f, profile.BodyHeatKilowatts, "Hydrogen generator heat");
+
+            Assert(PowerGenerationProfileRegistry.TryGet("PetroleumGenerator", out profile), "Petroleum generator profile exists");
+            AssertClose(2000f, profile.Wattage, "Petroleum generator wattage");
+            AssertClose(50f, profile.BodyHeatKilowatts, "Petroleum generator heat");
+
+            Assert(!PowerGenerationProfileRegistry.TryGet("SteamTurbine2", out profile), "Steam turbine remains excluded");
+            Assert(!PowerGenerationProfileRegistry.TryGet("SolarPanel", out profile), "Solar panel remains excluded from fuel generator profiles");
+        }
+
         private static void TestSolarHeatCalculator()
         {
             AssertClose(0.0, SolarHeatCalculator.CalculateSolarHeatDtuPerSecond(0.0, 380.0, 5000.0), "Solar heat at zero power");
@@ -147,6 +170,9 @@ namespace HardcoreSystems.Tests
             Assert(coldCopper.ShouldApply, "Cold copper overload heat applies");
             AssertClose(copperMeltingKelvin * 0.90, coldCopper.TargetTemperatureKelvin, "Overload target is 90 percent of melting point in Kelvin");
             AssertClose(100.0 * 0.385 * (copperMeltingKelvin * 0.90 - 300.0), coldCopper.RequiredEnergyDtu, "Overload heat uses mass and SHC");
+
+            var fromKilograms = OverloadHeatCalculator.CalculateOverloadHeatFromKilograms(300.0, copperMeltingKelvin, 0.1, 0.385);
+            AssertClose(coldCopper.RequiredEnergyDtu, fromKilograms.RequiredEnergyDtu, "Runtime overload heat converts building mass kilograms to grams");
 
             var alreadyHot = OverloadHeatCalculator.CalculateOverloadHeat(copperMeltingKelvin, copperMeltingKelvin, 100.0, 0.385);
             Assert(alreadyHot.IsValid, "Hot wire overload heat is valid");

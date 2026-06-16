@@ -38,7 +38,7 @@ namespace HardcoreSystems.Configuration
         private static void ApplyRuntimeModules(ModSettings settings, bool enabled)
         {
             settings.Mining.Enabled = enabled;
-            settings.Power.GeneratorRebalanceEnabled = false;
+            settings.Power.GeneratorRebalanceEnabled = enabled;
             settings.Power.FuelThermalAccountingEnabled = false;
             settings.Power.SolarPanelGenerationHeatEnabled = enabled;
             settings.Power.ElectricalDiagnosticsEnabled = false;

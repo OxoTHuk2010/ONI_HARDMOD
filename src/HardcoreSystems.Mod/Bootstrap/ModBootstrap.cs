@@ -9,6 +9,7 @@ using HardcoreSystems.Modules.DuplicantBalance;
 using HardcoreSystems.Modules.ElectricalOverloadThermalDamage;
 using HardcoreSystems.Modules.IndustrialHeat;
 using HardcoreSystems.Modules.MiningYield;
+using HardcoreSystems.Modules.PowerGeneration;
 using HardcoreSystems.Modules.SolarGeneration;
 using HardcoreSystems.Persistence;
 
@@ -55,6 +56,7 @@ namespace HardcoreSystems.Bootstrap
             registry.Register(new MiningYieldModule());
             registry.Register(new DuplicantBalanceModule());
             registry.Register(new DiseaseEffectsModule());
+            registry.Register(new PowerGenerationModule());
             registry.Register(new SolarGenerationModule());
             registry.Register(new IndustrialHeatModule());
             registry.Register(new ElectricalOverloadModule());
