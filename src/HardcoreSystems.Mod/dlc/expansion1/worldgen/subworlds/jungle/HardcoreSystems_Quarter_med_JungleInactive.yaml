@@ -1,0 +1,38 @@
+biomeNoise: noise/subworldJungle
+temperatureRange: HumanHot
+pdWeight: 0.2
+density:
+  min: 10
+  max: 15
+avoidRadius: 2
+doAvoidPoints: false
+dontRelaxChildren: false
+extraBiomeChildren: 8
+sampleBehaviour: PoissonDisk
+centralFeature:
+  type: features/jungle/SmallRoom
+biomes:
+  - name: biomes/Jungle/Basic
+    weight: 1
+    tags:
+      - med_Glom
+      - med_Drecko
+      - med_SwampLily
+      - med_SpiceVine
+      - med_SpiceVineSeed
+      - med_LeafyPlant
+      - med_LeafyPlantSeed
+      #- JungleGasPlant
+  - name: biomes/Jungle/Toxic
+    weight: 1
+    tags:
+      - med_Glom
+      - med_Drecko
+      - med_SwampLily
+      - med_SpiceVine
+      - med_SpiceVineSeed
+      - med_LeafyPlant
+      - med_LeafyPlantSeed
+tags:
+  - IgnoreCaveOverride
+zoneType: ToxicJungle

@@ -16,8 +16,8 @@ defaultsOverrides:
     DrawWorldBorderForce: false
     WorldBorderThickness: 5
     WorldBorderRange: 1
-    OverworldDensityMin: 80
-    OverworldDensityMax: 90
+    OverworldDensityMin: 6
+    OverworldDensityMax: 10
     OverworldAvoidRadius: 2
     OverworldSampleBehaviour: PoissonDisk
     OverworldMinNodes: 1
@@ -45,6 +45,23 @@ subworldFiles:
   - name: expansion1::subworlds/wasteland/HardcoreSystems_Quarter_WastelandWorm
   - name: expansion1::subworlds/radioactive/HardcoreSystems_Quarter_UraniumSprinkles
 
+  # Hardcore Systems Quarter shared DLC biome pool.
+  - name: expansion1::subworlds/swamp/HardcoreSystems_Quarter_Swamp
+  - name: expansion1::subworlds/rust/HardcoreSystems_Quarter_med_Rust
+  - name: expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_Radioactive
+  - name: expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_UraniumFields
+  - name: expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_FrozenUraniumFields
+  - name: expansion1::subworlds/frozen/HardcoreSystems_Quarter_FrozenSlush
+  - name: expansion1::subworlds/frozen/HardcoreSystems_Quarter_FrozenMedium
+  - name: expansion1::subworlds/ocean/HardcoreSystems_Quarter_med_Ocean
+  - name: expansion1::subworlds/forest/HardcoreSystems_Quarter_med_Forest
+  - name: expansion1::subworlds/forest/HardcoreSystems_Quarter_med_ForestHot
+  - name: expansion1::subworlds/marsh/HardcoreSystems_Quarter_HotMarshSteamy
+  - name: expansion1::subworlds/marsh/HardcoreSystems_Quarter_med_HotMarshInactive
+  - name: expansion1::subworlds/jungle/HardcoreSystems_Quarter_med_JungleInactive
+  - name: expansion1::subworlds/oil/HardcoreSystems_Quarter_OilSparse
+  - name: expansion1::subworlds/oil/HardcoreSystems_Quarter_OilWells
+  - name: expansion1::subworlds/barren/HardcoreSystems_Quarter_BarrenCore
 startSubworldName: subworlds/forest/HardcoreSystems_Quarter_ForestStart
 startingBaseTemplate: bases/forestBase
 startingBasePositionHorizontal:
@@ -81,6 +98,22 @@ unknownCellsAllowedSubworlds:
       - expansion1::subworlds/wasteland/HardcoreSystems_Quarter_WastelandBeetle
       - expansion1::subworlds/wasteland/HardcoreSystems_Quarter_WastelandWorm
       - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_UraniumSprinkles
+      - expansion1::subworlds/swamp/HardcoreSystems_Quarter_Swamp
+      - expansion1::subworlds/rust/HardcoreSystems_Quarter_med_Rust
+      - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_Radioactive
+      - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_UraniumFields
+      - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_FrozenUraniumFields
+      - expansion1::subworlds/frozen/HardcoreSystems_Quarter_FrozenSlush
+      - expansion1::subworlds/frozen/HardcoreSystems_Quarter_FrozenMedium
+      - expansion1::subworlds/ocean/HardcoreSystems_Quarter_med_Ocean
+      - expansion1::subworlds/forest/HardcoreSystems_Quarter_med_Forest
+      - expansion1::subworlds/forest/HardcoreSystems_Quarter_med_ForestHot
+      - expansion1::subworlds/marsh/HardcoreSystems_Quarter_HotMarshSteamy
+      - expansion1::subworlds/marsh/HardcoreSystems_Quarter_med_HotMarshInactive
+      - expansion1::subworlds/jungle/HardcoreSystems_Quarter_med_JungleInactive
+      - expansion1::subworlds/oil/HardcoreSystems_Quarter_OilSparse
+      - expansion1::subworlds/oil/HardcoreSystems_Quarter_OilWells
+      - expansion1::subworlds/barren/HardcoreSystems_Quarter_BarrenCore
   # Compact ring around the printing pod.
   - tagcommand: DistanceFromTag
     tag: AtStart
@@ -93,6 +126,12 @@ unknownCellsAllowedSubworlds:
       - subworlds/forest/HardcoreSystems_Quarter_ForestMiniMetal
       - subworlds/sandstone/HardcoreSystems_Quarter_Sandstone
       - subworlds/sandstone/HardcoreSystems_Quarter_Desert
+      - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_FrozenUraniumFields
+      - expansion1::subworlds/frozen/HardcoreSystems_Quarter_FrozenSlush
+      - expansion1::subworlds/frozen/HardcoreSystems_Quarter_FrozenMedium
+      - expansion1::subworlds/forest/HardcoreSystems_Quarter_med_Forest
+      - expansion1::subworlds/forest/HardcoreSystems_Quarter_med_ForestHot
+      - expansion1::subworlds/barren/HardcoreSystems_Quarter_BarrenCore
   # Keep at least water-capable biomes available near the start without reserving a huge region.
   - tagcommand: DistanceFromTag
     tag: AtStart
@@ -102,6 +141,10 @@ unknownCellsAllowedSubworlds:
     subworldNames:
       - subworlds/forest/HardcoreSystems_Quarter_ForestMiniWater
       - subworlds/ocean/HardcoreSystems_Quarter_Ocean
+      - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_FrozenUraniumFields
+      - expansion1::subworlds/frozen/HardcoreSystems_Quarter_FrozenSlush
+      - expansion1::subworlds/frozen/HardcoreSystems_Quarter_FrozenMedium
+      - expansion1::subworlds/ocean/HardcoreSystems_Quarter_med_Ocean
   # Mix all non-surface/non-magma biomes after the starter pocket.
   - tagcommand: DistanceFromTag
     tag: AtStart
@@ -121,6 +164,22 @@ unknownCellsAllowedSubworlds:
       - expansion1::subworlds/wasteland/HardcoreSystems_Quarter_WastelandBeetle
       - expansion1::subworlds/wasteland/HardcoreSystems_Quarter_WastelandWorm
       - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_UraniumSprinkles
+      - expansion1::subworlds/swamp/HardcoreSystems_Quarter_Swamp
+      - expansion1::subworlds/rust/HardcoreSystems_Quarter_med_Rust
+      - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_Radioactive
+      - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_UraniumFields
+      - expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_FrozenUraniumFields
+      - expansion1::subworlds/frozen/HardcoreSystems_Quarter_FrozenSlush
+      - expansion1::subworlds/frozen/HardcoreSystems_Quarter_FrozenMedium
+      - expansion1::subworlds/ocean/HardcoreSystems_Quarter_med_Ocean
+      - expansion1::subworlds/forest/HardcoreSystems_Quarter_med_Forest
+      - expansion1::subworlds/forest/HardcoreSystems_Quarter_med_ForestHot
+      - expansion1::subworlds/marsh/HardcoreSystems_Quarter_HotMarshSteamy
+      - expansion1::subworlds/marsh/HardcoreSystems_Quarter_med_HotMarshInactive
+      - expansion1::subworlds/jungle/HardcoreSystems_Quarter_med_JungleInactive
+      - expansion1::subworlds/oil/HardcoreSystems_Quarter_OilSparse
+      - expansion1::subworlds/oil/HardcoreSystems_Quarter_OilWells
+      - expansion1::subworlds/barren/HardcoreSystems_Quarter_BarrenCore
   # Quarter keeps lava/core content to the bottom band only.
   - tagcommand: DistanceFromTag
     tag: AtDepths
@@ -129,18 +188,23 @@ unknownCellsAllowedSubworlds:
     command: Replace
     subworldNames:
       - subworlds/magma/HardcoreSystems_Quarter_Bottom
-  # Quarter keeps space/regolith content to the surface band only.
-  - tagcommand: DistanceFromTag
+  # Quarter pins actual space to the surface tag so the top opens above the asteroid.
+  - tagcommand: AtTag
     tag: AtSurface
-    minDistance: 0
-    maxDistance: 0
     command: Replace
     subworldNames:
       - expansion1::subworlds/space/HardcoreSystems_Quarter_SpaceWithNoBorder
+  # Quarter keeps regolith/surface crust directly below space instead of letting it consume side biomes.
+  - tagcommand: DistanceFromTag
+    tag: AtSurface
+    minDistance: 1
+    maxDistance: 1
+    command: Replace
+    subworldNames:
       - expansion1::subworlds/space/HardcoreSystems_Quarter_HospitableClassicSurface
 
 worldTemplateRules:
-  # One optional water-focused geyser/vent for Quarter. TryOne avoids hard generation failures on tight maps.
+  # Several optional water-focused geyser/vent attempts for Quarter. TryOne avoids hard generation failures on tight maps.
   - names:
       - geysers/steam
       - geysers/salt_water
@@ -150,6 +214,7 @@ worldTemplateRules:
       - poi/hotmarsh/geyser_steam
       - expansion1::geysers/slush_salt_water
     listRule: TryOne
+    times: 3
     priority: 25
     useRelaxedFiltering: true
     allowedCellsFilter:
@@ -157,6 +222,29 @@ worldTemplateRules:
         tagcommand: DistanceFromTag
         tag: AtStart
         minDistance: 1
+        maxDistance: 99
+      - command: ExceptWith
+        zoneTypes: [ Space, MagmaCore ]
+  # Extra optional vents/volcanoes keep Quarter closer to Spaced Out resource density without guaranteed placement.
+  - names:
+      - geysers/chlorine_gas
+      - geysers/hot_po2
+      - geysers/methane
+      - geysers/hot_hydrogen
+      - geysers/liquid_co2
+      - geysers/slush_water
+      - geysers/small_volcano
+      - geysers/big_volcano
+      - expansion1::geysers/slush_salt_water
+    listRule: TryOne
+    times: 3
+    priority: 24
+    useRelaxedFiltering: true
+    allowedCellsFilter:
+      - command: Replace
+        tagcommand: DistanceFromTag
+        tag: AtStart
+        minDistance: 2
         maxDistance: 99
       - command: ExceptWith
         zoneTypes: [ Space, MagmaCore ]

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.7.7
+
+- Quarter Spaced Out vanilla-style worlds now add a shared compact DLC biome pool instead of relying only on the source world's vanilla-style subworld list.
+- The DLC pool is limited to DLC-generated worlds and is checked against existing `expansion1` subworld files before insertion, so base-game Quarter presets do not gain hard DLC references.
+- Added compact variants for selected swamp, rust, radioactive, wasteland, frozen, ocean, forest, marsh, jungle, oil, and barren DLC subworlds to improve biome variety on 20-25% maps.
+
+## 0.7.6
+
+- Re-tuned Quarter world layout after in-game testing showed only three oversized biomes on generated maps.
+- Quarter now uses much lower PowerTree density values (`OverworldDensityMin: 6`, `OverworldDensityMax: 10`) to create many smaller biome pockets instead of a few huge regions.
+- Quarter now separates actual `Space` from `Surface`/`Regolith`: space is pinned with `AtTag AtSurface`, while crust/regolith is limited to one band below it, reducing sideways surface placement and neutronium-closed tops.
+- Quarter now adds up to six optional geyser/vent attempts through relaxed `TryOne` rules, preserving generation stability while giving compact maps more resource variety when placement space exists.
+
 ## 0.7.5
 
 - Fixed Quarter world generation failure introduced in 0.7.4: `OverworldMinNodes: 24` could abort generation with `World layout with fewer than 24 points`.

@@ -267,8 +267,8 @@ function Set-QuarterDefaultsOverrides($lines) {
     $defaults.Add('    DrawWorldBorderForce: false')
     $defaults.Add('    WorldBorderThickness: 5')
     $defaults.Add('    WorldBorderRange: 1')
-    $defaults.Add('    OverworldDensityMin: 80')
-    $defaults.Add('    OverworldDensityMax: 90')
+    $defaults.Add('    OverworldDensityMin: 6')
+    $defaults.Add('    OverworldDensityMax: 10')
     $defaults.Add('    OverworldAvoidRadius: 2')
     $defaults.Add('    OverworldSampleBehaviour: PoissonDisk')
     $defaults.Add('    OverworldMinNodes: 1')
@@ -306,6 +306,8 @@ function Rewrite-QuarterUnknownCellsAllowedSubworlds($lines) {
 
     $startRef = $metadata.Start
     $surface = Select-Refs $refs @('(^|/)space/', 'surface', 'regolith') @()
+    $space = New-Object 'System.Collections.Generic.List[string]'
+    $surfaceCrust = New-Object 'System.Collections.Generic.List[string]'
     $magma = Select-Refs $refs @('(^|/)magma/', '(^|/)bottom$', '/bottom$') @()
     $water = Select-Refs $refs @('water', 'ocean', 'slush', 'ice', 'frozen') @('(^|/)space/', 'surface')
     $nearStart = Select-Refs $refs @('mini', 'water', 'sandstone', 'forest', 'barren', 'granite', 'frozen') @('(^|/)space/', 'surface', '(^|/)magma/', '(^|/)bottom$', '/bottom$')
@@ -331,6 +333,21 @@ function Rewrite-QuarterUnknownCellsAllowedSubworlds($lines) {
         }
 
         Add-UniqueRef $mid $ref
+    }
+
+    foreach ($ref in $surface) {
+        $lower = $ref.ToLowerInvariant()
+        if ($lower -match 'surface' -or $lower -match 'regolith') {
+            Add-UniqueRef $surfaceCrust $ref
+        } else {
+            Add-UniqueRef $space $ref
+        }
+    }
+
+    if ($space.Count -eq 0 -and $surface.Count -gt 0) {
+        foreach ($ref in $surface) {
+            Add-UniqueRef $space $ref
+        }
     }
 
     foreach ($ref in $nearStart) {
@@ -395,15 +412,24 @@ function Rewrite-QuarterUnknownCellsAllowedSubworlds($lines) {
         Add-SubworldNamesBlock $lines $magma
     }
 
-    if ($surface.Count -gt 0) {
-        $lines.Add('  # Quarter keeps space/regolith content to the surface band only.')
-        $lines.Add('  - tagcommand: DistanceFromTag')
+    if ($space.Count -gt 0) {
+        $lines.Add('  # Quarter pins actual space to the surface tag so the top opens above the asteroid.')
+        $lines.Add('  - tagcommand: AtTag')
         $lines.Add('    tag: AtSurface')
-        $lines.Add('    minDistance: 0')
-        $lines.Add('    maxDistance: 0')
         $lines.Add('    command: Replace')
         $lines.Add('    subworldNames:')
-        Add-SubworldNamesBlock $lines $surface
+        Add-SubworldNamesBlock $lines $space
+    }
+
+    if ($surfaceCrust.Count -gt 0) {
+        $lines.Add('  # Quarter keeps regolith/surface crust directly below space instead of letting it consume side biomes.')
+        $lines.Add('  - tagcommand: DistanceFromTag')
+        $lines.Add('    tag: AtSurface')
+        $lines.Add('    minDistance: 1')
+        $lines.Add('    maxDistance: 1')
+        $lines.Add('    command: Replace')
+        $lines.Add('    subworldNames:')
+        Add-SubworldNamesBlock $lines $surfaceCrust
     }
 
     return $lines
@@ -413,7 +439,7 @@ function Add-QuarterWaterTemplateRules($lines, [bool]$isDlcWorld) {
     $lines = Remove-TopLevelBlock $lines 'worldTemplateRules'
     $lines.Add('')
     $lines.Add('worldTemplateRules:')
-    $lines.Add('  # One optional water-focused geyser/vent for Quarter. TryOne avoids hard generation failures on tight maps.')
+    $lines.Add('  # Several optional water-focused geyser/vent attempts for Quarter. TryOne avoids hard generation failures on tight maps.')
     $lines.Add('  - names:')
     $lines.Add('      - geysers/steam')
     $lines.Add('      - geysers/salt_water')
@@ -425,6 +451,7 @@ function Add-QuarterWaterTemplateRules($lines, [bool]$isDlcWorld) {
         $lines.Add('      - expansion1::geysers/slush_salt_water')
     }
     $lines.Add('    listRule: TryOne')
+    $lines.Add('    times: 3')
     $lines.Add('    priority: 25')
     $lines.Add('    useRelaxedFiltering: true')
     $lines.Add('    allowedCellsFilter:')
@@ -432,6 +459,31 @@ function Add-QuarterWaterTemplateRules($lines, [bool]$isDlcWorld) {
     $lines.Add('        tagcommand: DistanceFromTag')
     $lines.Add('        tag: AtStart')
     $lines.Add('        minDistance: 1')
+    $lines.Add('        maxDistance: 99')
+    $lines.Add('      - command: ExceptWith')
+    $lines.Add('        zoneTypes: [ Space, MagmaCore ]')
+    $lines.Add('  # Extra optional vents/volcanoes keep Quarter closer to Spaced Out resource density without guaranteed placement.')
+    $lines.Add('  - names:')
+    $lines.Add('      - geysers/chlorine_gas')
+    $lines.Add('      - geysers/hot_po2')
+    $lines.Add('      - geysers/methane')
+    $lines.Add('      - geysers/hot_hydrogen')
+    $lines.Add('      - geysers/liquid_co2')
+    $lines.Add('      - geysers/slush_water')
+    $lines.Add('      - geysers/small_volcano')
+    $lines.Add('      - geysers/big_volcano')
+    if ($isDlcWorld) {
+        $lines.Add('      - expansion1::geysers/slush_salt_water')
+    }
+    $lines.Add('    listRule: TryOne')
+    $lines.Add('    times: 3')
+    $lines.Add('    priority: 24')
+    $lines.Add('    useRelaxedFiltering: true')
+    $lines.Add('    allowedCellsFilter:')
+    $lines.Add('      - command: Replace')
+    $lines.Add('        tagcommand: DistanceFromTag')
+    $lines.Add('        tag: AtStart')
+    $lines.Add('        minDistance: 2')
     $lines.Add('        maxDistance: 99')
     $lines.Add('      - command: ExceptWith')
     $lines.Add('        zoneTypes: [ Space, MagmaCore ]')
@@ -481,6 +533,100 @@ function Create-CompactSubworld($subworldRef, $spec) {
     return "$refPrefix`::$targetRelative"
 }
 
+function Test-SubworldRefExists([string]$subworldRef) {
+    $refPrefix = ""
+    $relative = $subworldRef
+    $sourceRoot = $assets
+    if ($subworldRef -match '^([^:]+)::(.+)$') {
+        $refPrefix = $matches[1]
+        $relative = $matches[2]
+        $sourceRoot = Join-Path $assets "dlc\$refPrefix"
+    }
+
+    if ($relative -notmatch '^subworlds/') {
+        return $false
+    }
+
+    $source = Join-Path $sourceRoot ("worldgen\" + ($relative -replace '/', '\') + ".yaml")
+    return Test-Path $source
+}
+
+function Add-QuarterDlcBiomePool($lines, $spec) {
+    $pool = @(
+        'expansion1::subworlds/swamp/Swamp',
+        'expansion1::subworlds/rust/med_Rust',
+        'expansion1::subworlds/radioactive/UraniumSprinkles',
+        'expansion1::subworlds/radioactive/med_Radioactive',
+        'expansion1::subworlds/radioactive/med_UraniumFields',
+        'expansion1::subworlds/radioactive/med_FrozenUraniumFields',
+        'expansion1::subworlds/wasteland/WastelandBeetle',
+        'expansion1::subworlds/wasteland/WastelandWorm',
+        'expansion1::subworlds/frozen/FrozenSlush',
+        'expansion1::subworlds/frozen/FrozenMedium',
+        'expansion1::subworlds/ocean/med_Ocean',
+        'expansion1::subworlds/forest/med_Forest',
+        'expansion1::subworlds/forest/med_ForestHot',
+        'expansion1::subworlds/marsh/HotMarshSteamy',
+        'expansion1::subworlds/marsh/med_HotMarshInactive',
+        'expansion1::subworlds/jungle/med_JungleInactive',
+        'expansion1::subworlds/oil/OilSparse',
+        'expansion1::subworlds/oil/OilWells',
+        'expansion1::subworlds/barren/BarrenCore'
+    )
+
+    $insertAt = -1
+    $inSubworldFiles = $false
+    $existing = New-Object 'System.Collections.Generic.HashSet[string]'
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if (Is-TopLevelKey $lines[$i]) {
+            if ($inSubworldFiles) {
+                $insertAt = $i
+                break
+            }
+
+            $inSubworldFiles = $lines[$i] -match '^subworldFiles:'
+        }
+
+        if ($inSubworldFiles -and $lines[$i] -match '^\s*-\s*name:\s*([^#\s]+)') {
+            [void]$existing.Add($matches[1])
+        }
+    }
+
+    if ($insertAt -lt 0 -and $inSubworldFiles) {
+        $insertAt = $lines.Count
+    }
+
+    if ($insertAt -lt 0) {
+        return ,$lines
+    }
+
+    $toInsert = New-Object 'System.Collections.Generic.List[string]'
+    foreach ($ref in $pool) {
+        if (-not (Test-SubworldRefExists $ref)) {
+            continue
+        }
+
+        $compactRef = Create-CompactSubworld $ref $spec
+        if ($existing.Contains($compactRef)) {
+            continue
+        }
+
+        $toInsert.Add("  - name: $compactRef")
+        [void]$existing.Add($compactRef)
+    }
+
+    if ($toInsert.Count -gt 0) {
+        $lines.Insert($insertAt, '  # Hardcore Systems Quarter shared DLC biome pool.')
+        $insertAt++
+        foreach ($line in $toInsert) {
+            $lines.Insert($insertAt, $line)
+            $insertAt++
+        }
+    }
+
+    return ,$lines
+}
+
 function Create-World($sourceRoot, $prefix, $worldName, $spec) {
     $source = Join-Path $sourceRoot "worldgen\worlds\$worldName.yaml"
     if (-not (Test-Path $source)) {
@@ -514,6 +660,10 @@ function Create-World($sourceRoot, $prefix, $worldName, $spec) {
     }
 
     if ([bool]$spec.CompactSubworlds) {
+        if ($prefix -ne "") {
+            $lines = Add-QuarterDlcBiomePool $lines $spec
+        }
+
         $lines = Set-QuarterDefaultsOverrides $lines
         $lines = Rewrite-QuarterUnknownCellsAllowedSubworlds $lines
         $lines = Add-QuarterWaterTemplateRules $lines ($prefix -ne "")

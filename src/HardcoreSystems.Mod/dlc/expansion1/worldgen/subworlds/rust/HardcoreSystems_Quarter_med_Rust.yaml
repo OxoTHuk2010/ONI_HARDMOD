@@ -1,0 +1,22 @@
+biomeNoise: noise/subworldRust
+temperatureRange: Cool
+pdWeight: 0.2
+density:
+  min: 10
+  max: 15
+avoidRadius: 2
+minChildCount: 1
+extraBiomeChildren: 1
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Rust/Basic
+    weight: 2
+    tags:
+      - med_BeanPlant
+      - med_BeanPlantSeed
+      - med_SaltPlant
+      - med_SaltPlantSeed
+      - med_PuftBleachstone
+tags:
+  - IgnoreCaveOverride
+zoneType: Rust

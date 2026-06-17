@@ -15,8 +15,8 @@ defaultsOverrides:
     DrawWorldBorderForce: false
     WorldBorderThickness: 5
     WorldBorderRange: 1
-    OverworldDensityMin: 80
-    OverworldDensityMax: 90
+    OverworldDensityMin: 6
+    OverworldDensityMax: 10
     OverworldAvoidRadius: 2
     OverworldSampleBehaviour: PoissonDisk
     OverworldMinNodes: 1
@@ -119,18 +119,23 @@ unknownCellsAllowedSubworlds:
     command: Replace
     subworldNames:
       - subworlds/magma/HardcoreSystems_Quarter_Bottom
-  # Quarter keeps space/regolith content to the surface band only.
-  - tagcommand: DistanceFromTag
+  # Quarter pins actual space to the surface tag so the top opens above the asteroid.
+  - tagcommand: AtTag
     tag: AtSurface
-    minDistance: 0
-    maxDistance: 0
     command: Replace
     subworldNames:
       - subworlds/space/HardcoreSystems_Quarter_Space
+  # Quarter keeps regolith/surface crust directly below space instead of letting it consume side biomes.
+  - tagcommand: DistanceFromTag
+    tag: AtSurface
+    minDistance: 1
+    maxDistance: 1
+    command: Replace
+    subworldNames:
       - subworlds/space/HardcoreSystems_Quarter_Surface
 
 worldTemplateRules:
-  # One optional water-focused geyser/vent for Quarter. TryOne avoids hard generation failures on tight maps.
+  # Several optional water-focused geyser/vent attempts for Quarter. TryOne avoids hard generation failures on tight maps.
   - names:
       - geysers/steam
       - geysers/salt_water
@@ -139,6 +144,7 @@ worldTemplateRules:
       - poi/jungle/geyser_steam
       - poi/hotmarsh/geyser_steam
     listRule: TryOne
+    times: 3
     priority: 25
     useRelaxedFiltering: true
     allowedCellsFilter:
@@ -146,6 +152,28 @@ worldTemplateRules:
         tagcommand: DistanceFromTag
         tag: AtStart
         minDistance: 1
+        maxDistance: 99
+      - command: ExceptWith
+        zoneTypes: [ Space, MagmaCore ]
+  # Extra optional vents/volcanoes keep Quarter closer to Spaced Out resource density without guaranteed placement.
+  - names:
+      - geysers/chlorine_gas
+      - geysers/hot_po2
+      - geysers/methane
+      - geysers/hot_hydrogen
+      - geysers/liquid_co2
+      - geysers/slush_water
+      - geysers/small_volcano
+      - geysers/big_volcano
+    listRule: TryOne
+    times: 3
+    priority: 24
+    useRelaxedFiltering: true
+    allowedCellsFilter:
+      - command: Replace
+        tagcommand: DistanceFromTag
+        tag: AtStart
+        minDistance: 2
         maxDistance: 99
       - command: ExceptWith
         zoneTypes: [ Space, MagmaCore ]
