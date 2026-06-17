@@ -1,0 +1,27 @@
+biomeNoise: noise/subworldHotMarsh
+temperatureRange: HumanWarm
+pdWeight: 0.2
+density:
+  min: 20
+  max: 25
+avoidRadius: 2
+minChildCount: 1
+extraBiomeChildren: 1
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/HotMarsh/Dry
+    weight: 2
+  - name: biomes/HotMarsh/Basic
+    weight: 5
+    tags:
+      - med_MushroomPlant
+      - med_MushroomSeed
+      - med_Puft
+      - med_BasicFabricPlant
+      - med_BasicFabricMaterialPlantSeed
+      - med_Pacu
+      - med_BulbPlant
+      - med_BulbPlantSeed
+tags:
+  - IgnoreCaveOverride
+zoneType: BoggyMarsh

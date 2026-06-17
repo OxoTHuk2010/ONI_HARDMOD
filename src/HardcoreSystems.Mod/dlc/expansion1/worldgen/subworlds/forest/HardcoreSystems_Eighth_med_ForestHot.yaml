@@ -1,0 +1,25 @@
+biomeNoise: noise/subworldForest
+temperatureRange: HumanWarm
+pdWeight: 0.2
+density:
+  min: 10
+  max: 15
+avoidRadius: 2
+minChildCount: 1
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Forest/Basic
+    weight: 2
+    tags:
+      - Oxyfern
+      - ForestTree     
+      - med_BasicSingleHarvestPlant
+      - forestCluster_BasicSingleHarvestPlantSeed
+      - med_ForestForagePlantPlanted
+      - med_LightBug
+      - LeafyPlant        
+      - LeafyPlantSeed
+      - med_Squirrel
+tags:
+  - IgnoreCaveOverride
+zoneType: Forest

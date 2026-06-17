@@ -1,0 +1,27 @@
+biomeNoise: noise/subworldFrozen
+temperatureRange: Cold
+pdWeight: 0.2
+density:
+  min: 10
+  max: 15
+avoidRadius: 2
+minChildCount: 1
+extraBiomeChildren: 1
+#borderOverride: hardToDig
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Frozen/Wet
+    weight: 1
+    tags:
+      - med_ColdWheat
+      - med_ColdWheatSeed
+      - med_ColdBreather
+  - name: biomes/Frozen/Dry
+    weight: 2
+    tags:
+      - med_ColdWheat
+      - med_ColdWheatSeed
+      - med_ColdBreather
+tags:
+  - IgnoreCaveOverride
+zoneType: FrozenWastes

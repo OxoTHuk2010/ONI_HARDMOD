@@ -69,6 +69,8 @@ namespace HardcoreSystems.Tests
             Assert(SettingsValidator.Validate(settings).IsValid, "Half asteroid size validates");
             settings.World.AsteroidSize = "Quarter";
             Assert(SettingsValidator.Validate(settings).IsValid, "Quarter asteroid size validates");
+            settings.World.AsteroidSize = "Eighth";
+            Assert(SettingsValidator.Validate(settings).IsValid, "Eighth asteroid size validates");
             settings.World.AsteroidSize = "HalfSpacedOut";
             Assert(!SettingsValidator.Validate(settings).IsValid, "Obsolete asteroid size is invalid");
         }

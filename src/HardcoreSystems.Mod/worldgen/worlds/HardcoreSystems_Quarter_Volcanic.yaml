@@ -15,7 +15,7 @@ defaultsOverrides:
   data:
     DrawWorldBorder: true
     DrawWorldBorderForce: false
-    WorldBorderThickness: 5
+    WorldBorderThickness: 3
     WorldBorderRange: 1
     OverworldDensityMin: 6
     OverworldDensityMax: 10

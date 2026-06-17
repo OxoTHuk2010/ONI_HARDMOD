@@ -1,0 +1,23 @@
+biomeNoise: noise/subworldHotMarsh
+temperatureRange: Cold
+pdWeight: 0.2
+density:
+  min: 20
+  max: 25
+avoidRadius: 2
+minChildCount: 1
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/HotMarsh/Dry
+    weight: 2
+  - name: biomes/HotMarsh/Basic
+    weight: 5
+    tags:
+      - MushroomSeed
+      - Puft
+      - BasicFabricMaterialPlantSeed
+      - Pacu
+      - BulbPlantSeed
+tags:
+  - IgnoreCaveOverride
+zoneType: BoggyMarsh

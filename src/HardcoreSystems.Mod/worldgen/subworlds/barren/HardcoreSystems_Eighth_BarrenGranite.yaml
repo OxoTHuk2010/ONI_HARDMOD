@@ -1,0 +1,16 @@
+biomeNoise: noise/Default
+temperatureRange: HumanWarm
+minChildCount: 1
+pdWeight: 0.2
+density:
+  min: 35
+  max: 45
+avoidRadius: 2
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Barren/Granite
+    weight: 1
+    tags:
+tags:
+  - IgnoreCaveOverride
+zoneType: Sandstone

@@ -1,0 +1,15 @@
+name: Hardcore SandstoneFrozen Eighth
+description: Separate Hardcore Systems Eighth asteroid-size preset. New worlds only.
+coordinatePrefix: HCS-E-S-FRZ
+forbiddenDlcIds: [EXPANSION1_ID]
+
+clusterCategory: Vanilla
+difficulty: 2
+menuOrder: 120
+
+startWorldIndex: 0
+worldPlacements:
+- world: worlds/HardcoreSystems_Eighth_SandstoneFrozen
+  allowedRings:
+    min: 0
+    max: 0

@@ -1,0 +1,19 @@
+biomeNoise: noise/subworldOcean
+temperatureRange: Cold
+pdWeight: 0.2
+density:
+  min: 10
+  max: 15
+avoidRadius: 2
+minChildCount: 1
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Ocean/Frozen
+    weight: 2
+    tags:
+      - SeaLettuceSeed
+      - SpiceVineSeed
+tags:
+  - IgnoreCaveOverride
+  - River
+zoneType: Ocean

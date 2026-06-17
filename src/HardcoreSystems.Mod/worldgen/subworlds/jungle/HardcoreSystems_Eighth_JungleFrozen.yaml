@@ -1,0 +1,31 @@
+biomeNoise: noise/subworldJungle
+temperatureRange: Cold
+pdWeight: 0.2
+density:
+  min: 10
+  max: 15
+avoidRadius: 2
+doAvoidPoints: false
+dontRelaxChildren: false
+sampleBehaviour: PoissonDisk
+centralFeature:
+  type: features/jungle/SmallRoom
+biomes:
+  - name: biomes/Jungle/Basic
+    weight: 1
+    tags:
+      #- Glom
+      - SwampLilySeed
+      - SpiceVineSeed
+      - LeafyPlantSeed
+      #- JungleGasPlant
+  - name: biomes/Jungle/Toxic
+    weight: 1
+    tags:
+      #- Glom
+      - SwampLilySeed
+      - SpiceVineSeed
+      - LeafyPlantSeed
+tags:
+  - IgnoreCaveOverride
+zoneType: ToxicJungle

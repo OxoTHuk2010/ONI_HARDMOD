@@ -1,0 +1,15 @@
+name: Hardcore Badlands Eighth
+description: Separate Hardcore Systems Eighth asteroid-size preset. New worlds only.
+coordinatePrefix: HCS-E-BAD-A
+forbiddenDlcIds: [EXPANSION1_ID]
+
+clusterCategory: Vanilla
+difficulty: 4
+menuOrder: 170
+
+startWorldIndex: 0
+worldPlacements:
+- world: worlds/HardcoreSystems_Eighth_Badlands
+  allowedRings:
+    min: 0
+    max: 0

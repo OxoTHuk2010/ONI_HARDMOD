@@ -1,0 +1,179 @@
+name: Hardcore Oceania Eighth
+description: Hardcore Systems Eighth asteroid-size variant generated from Oceania.
+disableWorldTraits: true
+asteroidIcon: Asteroid_oceania
+
+worldTraitScale: 0.125 # Hardcore Systems v0.7 area-scaled
+worldsize:
+  X: 90
+  Y: 136
+layoutMethod: PowerTree # Note: We need to add weights to the items in the layer
+
+defaultsOverrides:
+  data:
+    DrawWorldBorder: true
+    DrawWorldBorderForce: false
+    WorldBorderThickness: 3
+    WorldBorderRange: 1
+    OverworldDensityMin: 4
+    OverworldDensityMax: 7
+    OverworldAvoidRadius: 2
+    OverworldSampleBehaviour: PoissonDisk
+    OverworldMinNodes: 1
+    OverworldMaxNodes: 800
+    poiPadding: 1
+#                                in order to use this.
+
+# List all the subworld files to load
+subworldFiles:
+  - name: subworlds/sandstone/HardcoreSystems_Eighth_SandstoneStart
+  - name: subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniMetal
+  - name: subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniWater
+  - name: subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniAlgae
+  - name: subworlds/sandstone/HardcoreSystems_Eighth_Sandstone
+  - name: subworlds/marsh/HardcoreSystems_Eighth_HotMarsh
+  - name: subworlds/jungle/HardcoreSystems_Eighth_Jungle
+  - name: subworlds/frozen/HardcoreSystems_Eighth_Frozen
+  - name: subworlds/ocean/HardcoreSystems_Eighth_Ocean
+    weight: 1.5
+  - name: subworlds/ocean/HardcoreSystems_Eighth_OceanDeep
+    weight: 2.5
+  - name: subworlds/magma/HardcoreSystems_Eighth_Bottom
+  - name: subworlds/oil/HardcoreSystems_Eighth_OilPockets
+  - name: subworlds/space/HardcoreSystems_Eighth_Space
+  - name: subworlds/space/HardcoreSystems_Eighth_Surface
+
+startSubworldName: subworlds/sandstone/HardcoreSystems_Eighth_SandstoneStart
+startingBaseTemplate: bases/sandstoneBase
+startingBasePositionHorizontal:
+  min: 0.5
+  max: 0.5
+startingBasePositionVertical:
+  min: 0.35
+  max: 0.35
+
+seasons:
+  - MeteorShowers
+
+
+unknownCellsAllowedSubworlds:
+  # Hardcore Systems Quarter compact fill. Keep every biome pocket small and mixed.
+  - tagcommand: Default
+    command: Replace
+    subworldNames:
+      - subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniMetal
+      - subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniWater
+      - subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniAlgae
+      - subworlds/sandstone/HardcoreSystems_Eighth_Sandstone
+      - subworlds/marsh/HardcoreSystems_Eighth_HotMarsh
+      - subworlds/jungle/HardcoreSystems_Eighth_Jungle
+      - subworlds/frozen/HardcoreSystems_Eighth_Frozen
+      - subworlds/ocean/HardcoreSystems_Eighth_Ocean
+      - subworlds/ocean/HardcoreSystems_Eighth_OceanDeep
+      - subworlds/oil/HardcoreSystems_Eighth_OilPockets
+  # Compact ring around the printing pod.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 1
+    maxDistance: 1
+    command: Replace
+    subworldNames:
+      - subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniMetal
+      - subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniWater
+      - subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniAlgae
+      - subworlds/sandstone/HardcoreSystems_Eighth_Sandstone
+      - subworlds/frozen/HardcoreSystems_Eighth_Frozen
+  # Keep at least water-capable biomes available near the start without reserving a huge region.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 1
+    maxDistance: 2
+    command: UnionWith
+    subworldNames:
+      - subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniWater
+      - subworlds/frozen/HardcoreSystems_Eighth_Frozen
+      - subworlds/ocean/HardcoreSystems_Eighth_Ocean
+      - subworlds/ocean/HardcoreSystems_Eighth_OceanDeep
+  # Mix all non-surface/non-magma biomes after the starter pocket.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 2
+    maxDistance: 99
+    command: UnionWith
+    subworldNames:
+      - subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniMetal
+      - subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniWater
+      - subworlds/sandstone/HardcoreSystems_Eighth_SandstoneMiniAlgae
+      - subworlds/sandstone/HardcoreSystems_Eighth_Sandstone
+      - subworlds/marsh/HardcoreSystems_Eighth_HotMarsh
+      - subworlds/jungle/HardcoreSystems_Eighth_Jungle
+      - subworlds/frozen/HardcoreSystems_Eighth_Frozen
+      - subworlds/ocean/HardcoreSystems_Eighth_Ocean
+      - subworlds/ocean/HardcoreSystems_Eighth_OceanDeep
+      - subworlds/oil/HardcoreSystems_Eighth_OilPockets
+  # Quarter keeps lava/core content to the bottom band only.
+  - tagcommand: DistanceFromTag
+    tag: AtDepths
+    minDistance: 0
+    maxDistance: 0
+    command: Replace
+    subworldNames:
+      - subworlds/magma/HardcoreSystems_Eighth_Bottom
+  # Quarter pins actual space to the surface tag so the top opens above the asteroid.
+  - tagcommand: AtTag
+    tag: AtSurface
+    command: Replace
+    subworldNames:
+      - subworlds/space/HardcoreSystems_Eighth_Space
+  # Quarter keeps regolith/surface crust directly below space instead of letting it consume side biomes.
+  - tagcommand: DistanceFromTag
+    tag: AtSurface
+    minDistance: 1
+    maxDistance: 1
+    command: Replace
+    subworldNames:
+      - subworlds/space/HardcoreSystems_Eighth_Surface
+
+worldTemplateRules:
+  # Several optional water-focused geyser/vent attempts for Eighth. TryOne avoids hard generation failures on tight maps.
+  - names:
+      - geysers/steam
+      - geysers/salt_water
+      - geysers/filthy_water
+      - poi/poi_ocean_geyser_saltwater
+      - poi/jungle/geyser_steam
+      - poi/hotmarsh/geyser_steam
+    listRule: TryOne
+    times: 3
+    priority: 25
+    useRelaxedFiltering: true
+    allowedCellsFilter:
+      - command: Replace
+        tagcommand: DistanceFromTag
+        tag: AtStart
+        minDistance: 1
+        maxDistance: 99
+      - command: ExceptWith
+        zoneTypes: [ Space, MagmaCore ]
+  # Extra optional vents/volcanoes keep Eighth closer to Spaced Out resource density without guaranteed placement.
+  - names:
+      - geysers/chlorine_gas
+      - geysers/hot_po2
+      - geysers/methane
+      - geysers/hot_hydrogen
+      - geysers/liquid_co2
+      - geysers/slush_water
+      - geysers/small_volcano
+      - geysers/big_volcano
+    listRule: TryOne
+    times: 3
+    priority: 24
+    useRelaxedFiltering: true
+    allowedCellsFilter:
+      - command: Replace
+        tagcommand: DistanceFromTag
+        tag: AtStart
+        minDistance: 2
+        maxDistance: 99
+      - command: ExceptWith
+        zoneTypes: [ Space, MagmaCore ]

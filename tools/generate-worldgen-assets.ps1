@@ -23,8 +23,9 @@ foreach ($generatedRoot in $generatedRoots) {
 }
 
 $variantSpecs = @(
-    @{ Name = "Half"; AreaScale = 0.50; AxisScale = [Math]::Sqrt(0.50); Prefix = "HCS-H"; RemoveWorldTemplateRules = $false; CompactSubworlds = $false },
-    @{ Name = "Quarter"; AreaScale = 0.25; AxisScale = 0.50; Prefix = "HCS-Q"; RemoveWorldTemplateRules = $true; CompactSubworlds = $true }
+    @{ Name = "Half"; AreaScale = 0.50; AxisScale = [Math]::Sqrt(0.50); Prefix = "HCS-H"; RemoveWorldTemplateRules = $false; CompactSubworlds = $false; CompactStartSubworld = $true; DlcBiomePool = $true; RewriteHalfDlcFill = $true; DlcOptionalTemplateRules = $true; ThinCompactBorders = $true; MinX = 96; MinY = 128 },
+    @{ Name = "Quarter"; AreaScale = 0.25; AxisScale = 0.50; Prefix = "HCS-Q"; RemoveWorldTemplateRules = $true; CompactSubworlds = $true; ThinCompactBorders = $true; MinX = 96; MinY = 128; WorldBorderThickness = 3; OverworldDensityMin = 6; OverworldDensityMax = 10 },
+    @{ Name = "Eighth"; AreaScale = 0.125; AxisScale = [Math]::Sqrt(0.125); Prefix = "HCS-E"; RemoveWorldTemplateRules = $true; CompactSubworlds = $true; ThinCompactBorders = $true; MinX = 80; MinY = 112; WorldBorderThickness = 3; OverworldDensityMin = 4; OverworldDensityMax = 7 }
 )
 
 function Read-Lines($path) {
@@ -107,17 +108,46 @@ function Normalize-GeneratedWorldRules($lines, [bool]$removeWorldTemplateRules) 
     return ,$result
 }
 
-function Normalize-GeneratedSubworldRules($lines) {
+function Normalize-GeneratedSubworldRules($lines, [bool]$thinBorders) {
     $result = New-Object 'System.Collections.Generic.List[string]'
     $skippingBlock = $false
+    $skippingBorderSizeOverride = $false
     $hasPdWeight = $false
 
     foreach ($line in $lines) {
         if (Is-TopLevelKey $line) {
             $skippingBlock = $line -match '^(features|featureTemplates|templateRules|subworldTemplateRules):'
+            $skippingBorderSizeOverride = $thinBorders -and $line -match '^borderSizeOverride:\s*'
         }
 
         if ($skippingBlock) {
+            continue
+        }
+
+        if ($skippingBorderSizeOverride) {
+            if ($line -match '^borderSizeOverride:\s*') {
+                continue
+            }
+
+            if ($line -match '^\s+(min|max):\s*') {
+                continue
+            }
+
+            $skippingBorderSizeOverride = $false
+        }
+
+        if ($thinBorders -and $line -match '^borderOverridePriority:\s*') {
+            continue
+        }
+
+        if ($thinBorders -and $line -match '^borderOverride:\s*([^#\s]+)') {
+            $result.Add($line)
+            if ($matches[1] -ne 'NONE') {
+                $result.Add('borderOverridePriority: 5')
+                $result.Add('borderSizeOverride:')
+                $result.Add('  min: 0')
+                $result.Add('  max: 2')
+            }
             continue
         }
 
@@ -247,7 +277,19 @@ function Add-SubworldNamesBlock($lines, $refs) {
     }
 }
 
-function Set-QuarterDefaultsOverrides($lines) {
+function Get-SpecInt($spec, [string]$key, [int]$fallback) {
+    if ($spec.ContainsKey($key)) {
+        return [int]$spec[$key]
+    }
+
+    return $fallback
+}
+
+function Get-SpecBool($spec, [string]$key) {
+    return $spec.ContainsKey($key) -and [bool]$spec[$key]
+}
+
+function Set-QuarterDefaultsOverrides($lines, $spec) {
     $hasEmptyStartingWorldElements = $false
     foreach ($line in $lines) {
         if ($line -match '^\s*startingWorldElements:\s*\[\]\s*(#.*)?$') {
@@ -265,10 +307,10 @@ function Set-QuarterDefaultsOverrides($lines) {
     $defaults.Add('  data:')
     $defaults.Add('    DrawWorldBorder: true')
     $defaults.Add('    DrawWorldBorderForce: false')
-    $defaults.Add('    WorldBorderThickness: 5')
+    $defaults.Add('    WorldBorderThickness: ' + (Get-SpecInt $spec 'WorldBorderThickness' 5))
     $defaults.Add('    WorldBorderRange: 1')
-    $defaults.Add('    OverworldDensityMin: 6')
-    $defaults.Add('    OverworldDensityMax: 10')
+    $defaults.Add('    OverworldDensityMin: ' + (Get-SpecInt $spec 'OverworldDensityMin' 6))
+    $defaults.Add('    OverworldDensityMax: ' + (Get-SpecInt $spec 'OverworldDensityMax' 10))
     $defaults.Add('    OverworldAvoidRadius: 2')
     $defaults.Add('    OverworldSampleBehaviour: PoissonDisk')
     $defaults.Add('    OverworldMinNodes: 1')
@@ -435,11 +477,171 @@ function Rewrite-QuarterUnknownCellsAllowedSubworlds($lines) {
     return $lines
 }
 
-function Add-QuarterWaterTemplateRules($lines, [bool]$isDlcWorld) {
+function Rewrite-HalfDlcUnknownCellsAllowedSubworlds($lines) {
+    $metadata = Get-WorldSubworldRefs $lines
+    $refs = $metadata.Refs
+    if ($refs.Count -eq 0) {
+        return $lines
+    }
+
+    $startRef = $metadata.Start
+    $surface = Select-Refs $refs @('(^|/)space/', 'surface', 'regolith') @()
+    $space = New-Object 'System.Collections.Generic.List[string]'
+    $surfaceCrust = New-Object 'System.Collections.Generic.List[string]'
+    $magma = Select-Refs $refs @('(^|/)magma/', '(^|/)bottom$', '/bottom$') @()
+    $oil = Select-Refs $refs @('oil') @('(^|/)space/', 'surface', '(^|/)magma/', '(^|/)bottom$', '/bottom$')
+    $water = Select-Refs $refs @('water', 'ocean', 'slush', 'ice', 'frozen', 'swamp') @('(^|/)space/', 'surface', '(^|/)magma/', '(^|/)bottom$', '/bottom$')
+    $nearStart = Select-Refs $refs @('mini', 'water', 'sandstone', 'forest', 'swamp', 'frozen', 'barren') @('(^|/)space/', 'surface', '(^|/)magma/', '(^|/)bottom$', '/bottom$')
+    $vanilla = New-Object 'System.Collections.Generic.List[string]'
+    $dlc = New-Object 'System.Collections.Generic.List[string]'
+    $mid = New-Object 'System.Collections.Generic.List[string]'
+
+    foreach ($ref in $refs) {
+        $lower = $ref.ToLowerInvariant()
+        if ($ref -eq $startRef) {
+            continue
+        }
+
+        if ($lower -match '\(mixing[0-9]+\)') {
+            continue
+        }
+
+        if ($lower -match '(^|/)space/' -or $lower -match 'surface' -or $lower -match 'regolith') {
+            continue
+        }
+
+        if ($lower -match '(^|/)magma/' -or $lower -match '(^|/)bottom$' -or $lower -match '/bottom$') {
+            continue
+        }
+
+        Add-UniqueRef $mid $ref
+        if ($lower -match '^expansion1::') {
+            Add-UniqueRef $dlc $ref
+        } else {
+            Add-UniqueRef $vanilla $ref
+        }
+    }
+
+    foreach ($ref in $surface) {
+        $lower = $ref.ToLowerInvariant()
+        if ($lower -match 'surface' -or $lower -match 'regolith') {
+            Add-UniqueRef $surfaceCrust $ref
+        } else {
+            Add-UniqueRef $space $ref
+        }
+    }
+
+    $filteredNearStart = New-Object 'System.Collections.Generic.List[string]'
+    foreach ($ref in $nearStart) {
+        if ($ref -ne $startRef) {
+            Add-UniqueRef $filteredNearStart $ref
+        }
+    }
+    if ($filteredNearStart.Count -eq 0) {
+        $filteredNearStart = $mid
+    }
+
+    $balancedMid = New-Object 'System.Collections.Generic.List[string]'
+    foreach ($ref in $dlc) {
+        Add-UniqueRef $balancedMid $ref
+    }
+    foreach ($ref in $vanilla) {
+        Add-UniqueRef $balancedMid $ref
+    }
+    if ($balancedMid.Count -eq 0) {
+        $balancedMid = $mid
+    }
+
+    $lines = Remove-TopLevelBlock $lines 'unknownCellsAllowedSubworlds'
+    $lines.Add('')
+    $lines.Add('unknownCellsAllowedSubworlds:')
+    $lines.Add('  # Hardcore Systems Half DLC fill. Start stays compact; mid-map candidates favor the DLC pool first.')
+    $lines.Add('  - tagcommand: Default')
+    $lines.Add('    command: Replace')
+    $lines.Add('    subworldNames:')
+    Add-SubworldNamesBlock $lines $balancedMid
+
+    $lines.Add('  # Compact ring around the printing pod; the start subworld is no longer a large fallback biome.')
+    $lines.Add('  - tagcommand: DistanceFromTag')
+    $lines.Add('    tag: AtStart')
+    $lines.Add('    minDistance: 1')
+    $lines.Add('    maxDistance: 1')
+    $lines.Add('    command: Replace')
+    $lines.Add('    subworldNames:')
+    Add-SubworldNamesBlock $lines $filteredNearStart
+
+    if ($water.Count -gt 0) {
+        $lines.Add('  # Make water-capable vanilla and DLC biomes available near the starting area.')
+        $lines.Add('  - tagcommand: DistanceFromTag')
+        $lines.Add('    tag: AtStart')
+        $lines.Add('    minDistance: 1')
+        $lines.Add('    maxDistance: 3')
+        $lines.Add('    command: UnionWith')
+        $lines.Add('    subworldNames:')
+        Add-SubworldNamesBlock $lines $water
+    }
+
+    if ($balancedMid.Count -gt 0) {
+        $lines.Add('  # Keep vanilla biomes present, but let DLC biomes compete across the non-core map.')
+        $lines.Add('  - tagcommand: DistanceFromTag')
+        $lines.Add('    tag: AtStart')
+        $lines.Add('    minDistance: 2')
+        $lines.Add('    maxDistance: 99')
+        $lines.Add('    command: UnionWith')
+        $lines.Add('    subworldNames:')
+        Add-SubworldNamesBlock $lines $balancedMid
+    }
+
+    if ($magma.Count -gt 0) {
+        $lines.Add('  # Keep lava/core content constrained to the bottom band.')
+        $lines.Add('  - tagcommand: DistanceFromTag')
+        $lines.Add('    tag: AtDepths')
+        $lines.Add('    minDistance: 0')
+        $lines.Add('    maxDistance: 0')
+        $lines.Add('    command: Replace')
+        $lines.Add('    subworldNames:')
+        Add-SubworldNamesBlock $lines $magma
+    }
+
+    if ($oil.Count -gt 0) {
+        $lines.Add('  # Oil remains near the core instead of displacing the whole mid-map.')
+        $lines.Add('  - tagcommand: DistanceFromTag')
+        $lines.Add('    tag: AtDepths')
+        $lines.Add('    minDistance: 1')
+        $lines.Add('    maxDistance: 2')
+        $lines.Add('    command: UnionWith')
+        $lines.Add('    subworldNames:')
+        Add-SubworldNamesBlock $lines $oil
+    }
+
+    if ($space.Count -gt 0) {
+        $lines.Add('  # Pin actual space to the surface tag so the top opens above the asteroid.')
+        $lines.Add('  - tagcommand: AtTag')
+        $lines.Add('    tag: AtSurface')
+        $lines.Add('    command: Replace')
+        $lines.Add('    subworldNames:')
+        Add-SubworldNamesBlock $lines $space
+    }
+
+    if ($surfaceCrust.Count -gt 0) {
+        $lines.Add('  # Keep surface crust below space without letting it consume side biomes.')
+        $lines.Add('  - tagcommand: DistanceFromTag')
+        $lines.Add('    tag: AtSurface')
+        $lines.Add('    minDistance: 1')
+        $lines.Add('    maxDistance: 2')
+        $lines.Add('    command: Replace')
+        $lines.Add('    subworldNames:')
+        Add-SubworldNamesBlock $lines $surfaceCrust
+    }
+
+    return $lines
+}
+
+function Add-OptionalResourceTemplateRules($lines, [bool]$isDlcWorld, [string]$variantName) {
     $lines = Remove-TopLevelBlock $lines 'worldTemplateRules'
     $lines.Add('')
     $lines.Add('worldTemplateRules:')
-    $lines.Add('  # Several optional water-focused geyser/vent attempts for Quarter. TryOne avoids hard generation failures on tight maps.')
+    $lines.Add("  # Several optional water-focused geyser/vent attempts for $variantName. TryOne avoids hard generation failures on tight maps.")
     $lines.Add('  - names:')
     $lines.Add('      - geysers/steam')
     $lines.Add('      - geysers/salt_water')
@@ -462,7 +664,7 @@ function Add-QuarterWaterTemplateRules($lines, [bool]$isDlcWorld) {
     $lines.Add('        maxDistance: 99')
     $lines.Add('      - command: ExceptWith')
     $lines.Add('        zoneTypes: [ Space, MagmaCore ]')
-    $lines.Add('  # Extra optional vents/volcanoes keep Quarter closer to Spaced Out resource density without guaranteed placement.')
+    $lines.Add("  # Extra optional vents/volcanoes keep $variantName closer to Spaced Out resource density without guaranteed placement.")
     $lines.Add('  - names:')
     $lines.Add('      - geysers/chlorine_gas')
     $lines.Add('      - geysers/hot_po2')
@@ -491,8 +693,8 @@ function Add-QuarterWaterTemplateRules($lines, [bool]$isDlcWorld) {
     return $lines
 }
 
-function Create-CompactSubworld($subworldRef, $spec) {
-    if (-not [bool]$spec.CompactSubworlds) {
+function Create-CompactSubworld($subworldRef, $spec, [bool]$forceCompact = $false) {
+    if (-not [bool]$spec.CompactSubworlds -and -not $forceCompact) {
         return $subworldRef
     }
 
@@ -522,7 +724,7 @@ function Create-CompactSubworld($subworldRef, $spec) {
     $target = Join-Path $targetRoot (($targetRelative -replace '/', '\') + ".yaml")
 
     if (-not (Test-Path $target)) {
-        $lines = Normalize-GeneratedSubworldRules (Read-Lines $source)
+        $lines = Normalize-GeneratedSubworldRules (Read-Lines $source) (Get-SpecBool $spec 'ThinCompactBorders')
         Write-Lines $target $lines
     }
 
@@ -616,7 +818,7 @@ function Add-QuarterDlcBiomePool($lines, $spec) {
     }
 
     if ($toInsert.Count -gt 0) {
-        $lines.Insert($insertAt, '  # Hardcore Systems Quarter shared DLC biome pool.')
+        $lines.Insert($insertAt, '  # Hardcore Systems shared DLC biome pool.')
         $insertAt++
         foreach ($line in $toInsert) {
             $lines.Insert($insertAt, $line)
@@ -637,6 +839,7 @@ function Create-World($sourceRoot, $prefix, $worldName, $spec) {
     $targetRoot = if ($prefix -eq "") { Join-Path $outRoot "worldgen\worlds" } else { Join-Path $outRoot "dlc\$prefix\worldgen\worlds" }
     $target = Join-Path $targetRoot "$targetName.yaml"
     $lines = Normalize-GeneratedWorldRules (Read-Lines $source) ([bool]$spec.RemoveWorldTemplateRules)
+    $sourceStartRef = (Get-WorldSubworldRefs $lines).Start
 
     for ($i = 0; $i -lt $lines.Count; $i++) {
         if ($lines[$i] -match '^name:') {
@@ -647,26 +850,41 @@ function Create-World($sourceRoot, $prefix, $worldName, $spec) {
             $value = [double]$matches[1]
             $lines[$i] = "worldTraitScale: " + ($value * $spec.AreaScale).ToString("0.###", [System.Globalization.CultureInfo]::InvariantCulture) + " # Hardcore Systems v0.7 area-scaled"
         } elseif ($lines[$i] -match '^\s*X:\s*(\d+)\s*$') {
-            $lines[$i] = "  X: " + (Scale-Even ([int]$matches[1]) $spec.AxisScale 96)
+            $lines[$i] = "  X: " + (Scale-Even ([int]$matches[1]) $spec.AxisScale (Get-SpecInt $spec 'MinX' 96))
         } elseif ($lines[$i] -match '^\s*Y:\s*(\d+)\s*$') {
-            $lines[$i] = "  Y: " + (Scale-Even ([int]$matches[1]) $spec.AxisScale 128)
+            $lines[$i] = "  Y: " + (Scale-Even ([int]$matches[1]) $spec.AxisScale (Get-SpecInt $spec 'MinY' 128))
         } elseif ($lines[$i] -match '^(\s*-\s*name:\s*)([A-Za-z0-9_:\/]+)(.*)$') {
-            $lines[$i] = $matches[1] + (Create-CompactSubworld $matches[2] $spec) + $matches[3]
+            $forceStartCompact = (Get-SpecBool $spec 'CompactStartSubworld') -and $prefix -ne "" -and $matches[2] -eq $sourceStartRef
+            $lines[$i] = $matches[1] + (Create-CompactSubworld $matches[2] $spec $forceStartCompact) + $matches[3]
         } elseif ($lines[$i] -match '^(startSubworldName:\s*)([A-Za-z0-9_:\/]+)(.*)$') {
-            $lines[$i] = $matches[1] + (Create-CompactSubworld $matches[2] $spec) + $matches[3]
+            $forceStartCompact = (Get-SpecBool $spec 'CompactStartSubworld') -and $prefix -ne "" -and $matches[2] -eq $sourceStartRef
+            $lines[$i] = $matches[1] + (Create-CompactSubworld $matches[2] $spec $forceStartCompact) + $matches[3]
         } elseif ($lines[$i] -match '^(\s*-\s*)((?:[A-Za-z0-9_]+::)?subworlds/[A-Za-z0-9_/]+)(.*)$') {
-            $lines[$i] = $matches[1] + (Create-CompactSubworld $matches[2] $spec) + $matches[3]
+            $forceStartCompact = (Get-SpecBool $spec 'CompactStartSubworld') -and $prefix -ne "" -and $matches[2] -eq $sourceStartRef
+            $lines[$i] = $matches[1] + (Create-CompactSubworld $matches[2] $spec $forceStartCompact) + $matches[3]
         }
     }
 
+    if ($prefix -ne "" -and (Get-SpecBool $spec 'DlcBiomePool')) {
+        $lines = Add-QuarterDlcBiomePool $lines $spec
+    }
+
+    if ($prefix -ne "" -and (Get-SpecBool $spec 'RewriteHalfDlcFill')) {
+        $lines = Rewrite-HalfDlcUnknownCellsAllowedSubworlds $lines
+    }
+
+    if ($prefix -ne "" -and (Get-SpecBool $spec 'DlcOptionalTemplateRules')) {
+        $lines = Add-OptionalResourceTemplateRules $lines $true $spec.Name
+    }
+
     if ([bool]$spec.CompactSubworlds) {
-        if ($prefix -ne "") {
+        if ($prefix -ne "" -and -not (Get-SpecBool $spec 'DlcBiomePool')) {
             $lines = Add-QuarterDlcBiomePool $lines $spec
         }
 
-        $lines = Set-QuarterDefaultsOverrides $lines
+        $lines = Set-QuarterDefaultsOverrides $lines $spec
         $lines = Rewrite-QuarterUnknownCellsAllowedSubworlds $lines
-        $lines = Add-QuarterWaterTemplateRules $lines ($prefix -ne "")
+        $lines = Add-OptionalResourceTemplateRules $lines ($prefix -ne "") $spec.Name
     }
 
     Write-Lines $target $lines

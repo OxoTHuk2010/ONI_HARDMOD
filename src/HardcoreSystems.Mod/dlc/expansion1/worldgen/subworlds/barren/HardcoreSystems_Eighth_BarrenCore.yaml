@@ -1,0 +1,15 @@
+biomeNoise: noise/Default
+temperatureRange: HumanHot
+minChildCount: 1
+pdWeight: 0.2
+density:
+  min: 15
+  max: 20
+avoidRadius: 2
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: expansion1::biomes/Barren/GraniteOre
+    weight: 1
+tags:
+  - IgnoreCaveOverride
+zoneType: Barren

@@ -1,0 +1,28 @@
+biomeNoise: noise/subworldRust
+temperatureRange: HumanWarm
+pdWeight: 0.2
+density:
+  min: 10
+  max: 15
+avoidRadius: 2
+#minChildCount: 4
+extraBiomeChildren: 2
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Rust/Basic
+    weight: 2
+    tags:
+      - BeanPlantSeed
+      - SaltPlant
+      - SaltPlantSeed
+      - PuftBleachstone
+  - name: biomes/Rust/Sulfurous
+    weight: 2
+    tags:
+      - BeanPlantSeed
+      - SaltPlant
+      - SaltPlantSeed
+      - PuftBleachstone
+tags:
+  - IgnoreCaveOverride
+zoneType: Rust

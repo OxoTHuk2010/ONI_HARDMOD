@@ -26,7 +26,7 @@ defaultsOverrides:
     OverworldSampleBehaviour: PoissonDisk
 # List all the subworld files to load
 subworldFiles:
-  - name: subworlds/sandstone/SandstoneStart
+  - name: subworlds/sandstone/HardcoreSystems_Half_SandstoneStart
   - name: subworlds/sandstone/SandstoneMiniMetal
   - name: subworlds/sandstone/SandstoneMiniWater
   - name: subworlds/sandstone/SandstoneMiniAlgae
@@ -43,7 +43,24 @@ subworldFiles:
   - name: expansion1::subworlds/wasteland/WastelandWorm
   - name: expansion1::subworlds/radioactive/UraniumSprinkles
 
-startSubworldName: subworlds/sandstone/SandstoneStart
+  # Hardcore Systems shared DLC biome pool.
+  - name: expansion1::subworlds/swamp/Swamp
+  - name: expansion1::subworlds/rust/med_Rust
+  - name: expansion1::subworlds/radioactive/med_Radioactive
+  - name: expansion1::subworlds/radioactive/med_UraniumFields
+  - name: expansion1::subworlds/radioactive/med_FrozenUraniumFields
+  - name: expansion1::subworlds/frozen/FrozenSlush
+  - name: expansion1::subworlds/frozen/FrozenMedium
+  - name: expansion1::subworlds/ocean/med_Ocean
+  - name: expansion1::subworlds/forest/med_Forest
+  - name: expansion1::subworlds/forest/med_ForestHot
+  - name: expansion1::subworlds/marsh/HotMarshSteamy
+  - name: expansion1::subworlds/marsh/med_HotMarshInactive
+  - name: expansion1::subworlds/jungle/med_JungleInactive
+  - name: expansion1::subworlds/oil/OilSparse
+  - name: expansion1::subworlds/oil/OilWells
+  - name: expansion1::subworlds/barren/BarrenCore
+startSubworldName: subworlds/sandstone/HardcoreSystems_Half_SandstoneStart
 startingBaseTemplate: bases/sandstoneBase
 startingBasePositionHorizontal:
   min: 0.5
@@ -53,11 +70,39 @@ startingBasePositionVertical:
   max: 0.55
 
 # Specify where subworlds can spawn. These rules are processed in order and their effects are cumulative.
-unknownCellsAllowedSubworlds: 
+unknownCellsAllowedSubworlds:
+  # Hardcore Systems Half DLC fill. Start stays compact; mid-map candidates favor the DLC pool first.
   - tagcommand: Default
     command: Replace
     subworldNames:
-      - subworlds/sandstone/SandstoneStart
+      - expansion1::subworlds/wasteland/WastelandBeetle
+      - expansion1::subworlds/wasteland/WastelandWorm
+      - expansion1::subworlds/radioactive/UraniumSprinkles
+      - expansion1::subworlds/swamp/Swamp
+      - expansion1::subworlds/rust/med_Rust
+      - expansion1::subworlds/radioactive/med_Radioactive
+      - expansion1::subworlds/radioactive/med_UraniumFields
+      - expansion1::subworlds/radioactive/med_FrozenUraniumFields
+      - expansion1::subworlds/frozen/FrozenSlush
+      - expansion1::subworlds/frozen/FrozenMedium
+      - expansion1::subworlds/ocean/med_Ocean
+      - expansion1::subworlds/forest/med_Forest
+      - expansion1::subworlds/forest/med_ForestHot
+      - expansion1::subworlds/marsh/HotMarshSteamy
+      - expansion1::subworlds/marsh/med_HotMarshInactive
+      - expansion1::subworlds/jungle/med_JungleInactive
+      - expansion1::subworlds/oil/OilSparse
+      - expansion1::subworlds/oil/OilWells
+      - expansion1::subworlds/barren/BarrenCore
+      - subworlds/sandstone/SandstoneMiniMetal
+      - subworlds/sandstone/SandstoneMiniWater
+      - subworlds/sandstone/SandstoneMiniAlgae
+      - subworlds/marsh/HotMarsh
+      - subworlds/jungle/Jungle
+      - subworlds/frozen/Frozen
+      - subworlds/ocean/Ocean
+      - subworlds/oil/OilPockets
+  # Compact ring around the printing pod; the start subworld is no longer a large fallback biome.
   - tagcommand: DistanceFromTag
     tag: AtStart
     minDistance: 1
@@ -67,194 +112,133 @@ unknownCellsAllowedSubworlds:
       - subworlds/sandstone/SandstoneMiniMetal
       - subworlds/sandstone/SandstoneMiniWater
       - subworlds/sandstone/SandstoneMiniAlgae
-  # Ring-1
+      - subworlds/frozen/Frozen
+      - expansion1::subworlds/swamp/Swamp
+      - expansion1::subworlds/radioactive/med_FrozenUraniumFields
+      - expansion1::subworlds/frozen/FrozenSlush
+      - expansion1::subworlds/frozen/FrozenMedium
+      - expansion1::subworlds/forest/med_Forest
+      - expansion1::subworlds/forest/med_ForestHot
+      - expansion1::subworlds/barren/BarrenCore
+  # Make water-capable vanilla and DLC biomes available near the starting area.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 1
+    maxDistance: 3
+    command: UnionWith
+    subworldNames:
+      - subworlds/sandstone/SandstoneMiniWater
+      - subworlds/frozen/Frozen
+      - subworlds/ocean/Ocean
+      - expansion1::subworlds/swamp/Swamp
+      - expansion1::subworlds/radioactive/med_FrozenUraniumFields
+      - expansion1::subworlds/frozen/FrozenSlush
+      - expansion1::subworlds/frozen/FrozenMedium
+      - expansion1::subworlds/ocean/med_Ocean
+  # Keep vanilla biomes present, but let DLC biomes compete across the non-core map.
   - tagcommand: DistanceFromTag
     tag: AtStart
     minDistance: 2
-    maxDistance: 2
-    command: Replace
+    maxDistance: 99
+    command: UnionWith
     subworldNames:
-      - subworlds/marsh/HotMarsh
-      - subworlds/jungle/Jungle
       - expansion1::subworlds/wasteland/WastelandBeetle
-  # Ring-2
-  - tagcommand: DistanceFromTag
-    tag: AtStart
-    minDistance: 3
-    maxDistance: 3
-    command: Replace
-    subworldNames:
-      - subworlds/marsh/HotMarsh
-      - subworlds/jungle/Jungle
-      - subworlds/ocean/Ocean
-      - subworlds/frozen/Frozen
-      - expansion1::subworlds/wasteland/WastelandBeetle
-      - (Mixing1)
-      - (Mixing2)
-      - (Mixing3)
-      - (Mixing4)
-      - (Mixing5)
-      - (Mixing6)
-  # Ring-3
-  - tagcommand: DistanceFromTag
-    tag: AtStart
-    minDistance: 4
-    maxDistance: 4
-    command: Replace
-    subworldNames:
-      - subworlds/marsh/HotMarsh
-      - subworlds/jungle/Jungle
-      - subworlds/ocean/Ocean
-      - subworlds/frozen/Frozen
-      - expansion1::subworlds/radioactive/UraniumSprinkles
       - expansion1::subworlds/wasteland/WastelandWorm
-      - (Mixing1)
-      - (Mixing2)
-      - (Mixing3)
-      - (Mixing4)
-      - (Mixing5)
-      - (Mixing6)
-  # Ring-4
-  - tagcommand: DistanceFromTag
-    tag: AtStart
-    minDistance: 5
-    maxDistance: 999
-    command: Replace
-    subworldNames:
+      - expansion1::subworlds/radioactive/UraniumSprinkles
+      - expansion1::subworlds/swamp/Swamp
+      - expansion1::subworlds/rust/med_Rust
+      - expansion1::subworlds/radioactive/med_Radioactive
+      - expansion1::subworlds/radioactive/med_UraniumFields
+      - expansion1::subworlds/radioactive/med_FrozenUraniumFields
+      - expansion1::subworlds/frozen/FrozenSlush
+      - expansion1::subworlds/frozen/FrozenMedium
+      - expansion1::subworlds/ocean/med_Ocean
+      - expansion1::subworlds/forest/med_Forest
+      - expansion1::subworlds/forest/med_ForestHot
+      - expansion1::subworlds/marsh/HotMarshSteamy
+      - expansion1::subworlds/marsh/med_HotMarshInactive
+      - expansion1::subworlds/jungle/med_JungleInactive
+      - expansion1::subworlds/oil/OilSparse
+      - expansion1::subworlds/oil/OilWells
+      - expansion1::subworlds/barren/BarrenCore
+      - subworlds/sandstone/SandstoneMiniMetal
+      - subworlds/sandstone/SandstoneMiniWater
+      - subworlds/sandstone/SandstoneMiniAlgae
       - subworlds/marsh/HotMarsh
       - subworlds/jungle/Jungle
-      - subworlds/ocean/Ocean
       - subworlds/frozen/Frozen
-      - expansion1::subworlds/radioactive/UraniumSprinkles
-      - (Mixing1)
-      - (Mixing2)
-      - (Mixing3)
-      - (Mixing4)
-      - (Mixing5)
-      - (Mixing6)
-  # Core
-  - tagcommand: AtTag
+      - subworlds/ocean/Ocean
+      - subworlds/oil/OilPockets
+  # Keep lava/core content constrained to the bottom band.
+  - tagcommand: DistanceFromTag
     tag: AtDepths
+    minDistance: 0
+    maxDistance: 0
     command: Replace
     subworldNames:
       - subworlds/magma/Bottom
-  # Above Core
+  # Oil remains near the core instead of displacing the whole mid-map.
   - tagcommand: DistanceFromTag
     tag: AtDepths
     minDistance: 1
-    maxDistance: 1
-    command: Replace
+    maxDistance: 2
+    command: UnionWith
     subworldNames:
       - subworlds/oil/OilPockets
-  # Space
-  - tagcommand: DistanceFromTag
+      - expansion1::subworlds/oil/OilSparse
+      - expansion1::subworlds/oil/OilWells
+  # Pin actual space to the surface tag so the top opens above the asteroid.
+  - tagcommand: AtTag
     tag: AtSurface
-    minDistance: 0
-    maxDistance: 1
     command: Replace
     subworldNames:
       - expansion1::subworlds/space/SpaceWithNoBorder
-  # Surface
+  # Keep surface crust below space without letting it consume side biomes.
   - tagcommand: DistanceFromTag
     tag: AtSurface
-    minDistance: 2
+    minDistance: 1
     maxDistance: 2
     command: Replace
     subworldNames:
       - expansion1::subworlds/space/HospitableClassicSurface
 
-worldTemplateRules:  
-  # Jungle
+worldTemplateRules:
+  # Several optional water-focused geyser/vent attempts for Half. TryOne avoids hard generation failures on tight maps.
   - names:
-      - poi/jungle/geyser_steam
-    listRule: GuaranteeOne
-    priority: 100
-    allowedCellsFilter:
-      - command: Replace
-        zoneTypes: [ToxicJungle]
-  - names:
-      - poi/jungle/geyser_methane
-      - poi/jungle/geyser_chlorine
-    listRule: GuaranteeOne
-    priority: 100
-    allowedCellsFilter:
-      - command: Replace
-        zoneTypes: [ToxicJungle]
-  # Marsh
-  - names:
-      - poi/hotmarsh/geyser_steam
-    listRule: GuaranteeOne
-    priority: 100
-    allowedCellsFilter:
-      - command: Replace
-        zoneTypes: [BoggyMarsh]
-  - names:
-      - poi/hotmarsh/geyser_methane
-    listRule: GuaranteeOne
-    priority: 100
-    allowedCellsFilter:
-      - command: Replace
-        zoneTypes: [BoggyMarsh]
-  # Frozen
-  - names:
-      - poi/frozen/heatsink_a
-      - poi/frozen/heatsink_b
-      - poi/frozen/heatsink_c
-      - poi/frozen/heatsink_d
-    listRule: GuaranteeSomeTryMore
-    someCount: 1
-    moreCount: 2
-    priority: 100 
-    allowedCellsFilter:
-      - command: Replace
-        zoneTypes: [FrozenWastes]
-  # Ocean
-  - names:
+      - geysers/steam
+      - geysers/salt_water
+      - geysers/filthy_water
       - poi/poi_ocean_geyser_saltwater
-    listRule: GuaranteeOne
-    priority: 100 
-    allowedCellsFilter:
-      - command: Replace
-        zoneTypes: [Ocean]
-  # Oil
-  - names:
-    - poi/oil/small_oilpockets_geyser_a
-    - poi/oil/small_oilpockets_geyser_b
-    - poi/oil/small_oilpockets_geyser_c
-    - poi/oil/small_oilpockets_geyser_d
-    - poi/oil/small_oilpockets_geyser_e
-    - poi/oil/small_oilpockets_geyser_f
-    - poi/oil/small_oilpockets_geyser_g
-    - poi/oil/small_oilpockets_geyser_h
-    listRule: GuaranteeOne
+      - poi/jungle/geyser_steam
+      - poi/hotmarsh/geyser_steam
+      - expansion1::geysers/slush_salt_water
+    listRule: TryOne
     times: 3
-    allowDuplicates: true # be more flexible due to high temperature borders
-    priority: 100
-    allowedCellsFilter:
-      - command: Replace
-        zoneTypes: [OilField]
-  # Gravitas
-  - names:
-    - expansion1::poi/warp/sender
-    - expansion1::poi/warp/receiver
-    - expansion1::poi/warp/teleporter_no_oil
-    listRule: GuaranteeAll
-    priority: 90
+    priority: 25
+    useRelaxedFiltering: true
     allowedCellsFilter:
       - command: Replace
         tagcommand: DistanceFromTag
         tag: AtStart
-        minDistance: 3
-        maxDistance: 4
-      - command: IntersectWith
-        zoneTypes: [ Ocean, BoggyMarsh, ToxicJungle, Wasteland ]
+        minDistance: 1
+        maxDistance: 99
       - command: ExceptWith
-        tagcommand: AtTag
-        tag: NoGravitasFeatures
+        zoneTypes: [ Space, MagmaCore ]
+  # Extra optional vents/volcanoes keep Half closer to Spaced Out resource density without guaranteed placement.
   - names:
-      - expansion1::poi/genericGravitas/poi_office
-    listRule: GuaranteeAll
-    priority: 90
+      - geysers/chlorine_gas
+      - geysers/hot_po2
+      - geysers/methane
+      - geysers/hot_hydrogen
+      - geysers/liquid_co2
+      - geysers/slush_water
+      - geysers/small_volcano
+      - geysers/big_volcano
+      - expansion1::geysers/slush_salt_water
+    listRule: TryOne
+    times: 3
+    priority: 24
+    useRelaxedFiltering: true
     allowedCellsFilter:
       - command: Replace
         tagcommand: DistanceFromTag
@@ -262,39 +246,4 @@ worldTemplateRules:
         minDistance: 2
         maxDistance: 99
       - command: ExceptWith
-        tagcommand: AtTag
-        tag: NoGravitasFeatures
-      - command: ExceptWith
-        tagcommand: DistanceFromTag
-        tag: AtDepths
-        minDistance: 0
-        maxDistance: 2
-      - command: ExceptWith
-        tagcommand: DistanceFromTag
-        tag: AtSurface
-        minDistance: 0
-        maxDistance: 2
-  # Generic Geysers
-  - names:
-    - geysers/generic
-    listRule: TryOne
-    times: 12
-    ruleId: GenericGeysers
-    allowDuplicates: true
-    allowedCellsFilter:
-      - command: Replace
-        tagcommand: NotAtTag
-        tag: NoGlobalFeatureSpawning
-  # Uranium Geode
-  - names:
-    - expansion1::poi/radioactive/uranium_geode1
-    listRule: GuaranteeOne
-    useRelaxedFiltering: true
-    allowExtremeTemperatureOverlap: true # has Abyssalite border
-    priority: 200
-    allowedCellsFilter:
-      - command: Replace
-        tagcommand: DistanceFromTag
-        tag: AtStart
-        minDistance: 1
-        maxDistance: 1
+        zoneTypes: [ Space, MagmaCore ]

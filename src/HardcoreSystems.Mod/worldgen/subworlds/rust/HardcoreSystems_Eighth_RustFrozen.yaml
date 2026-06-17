@@ -1,0 +1,18 @@
+biomeNoise: noise/subworldRust
+temperatureRange: Cold
+pdWeight: 0.2
+density:
+  min: 10
+  max: 15
+avoidRadius: 2
+minChildCount: 1
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Rust/Snowy
+    weight: 2
+    tags:
+      - BeanPlantSeed
+      - ColdBreatherSparse
+tags:
+  - IgnoreCaveOverride
+zoneType: Rust

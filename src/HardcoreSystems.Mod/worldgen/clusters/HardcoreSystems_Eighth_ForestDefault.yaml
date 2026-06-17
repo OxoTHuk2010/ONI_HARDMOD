@@ -1,0 +1,14 @@
+name: Hardcore ForestDefault Eighth
+description: Separate Hardcore Systems Eighth asteroid-size preset. New worlds only.
+coordinatePrefix: HCS-E-FRST-A
+forbiddenDlcIds: [EXPANSION1_ID]
+clusterCategory: Vanilla
+difficulty: 3
+menuOrder: 150
+
+startWorldIndex: 0
+worldPlacements:
+- world: worlds/HardcoreSystems_Eighth_ForestDefault
+  allowedRings:
+    min: 0
+    max: 0

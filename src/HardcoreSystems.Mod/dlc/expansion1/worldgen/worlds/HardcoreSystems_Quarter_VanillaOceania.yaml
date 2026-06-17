@@ -14,7 +14,7 @@ defaultsOverrides:
   data:
     DrawWorldBorder: true
     DrawWorldBorderForce: false
-    WorldBorderThickness: 5
+    WorldBorderThickness: 3
     WorldBorderRange: 1
     OverworldDensityMin: 6
     OverworldDensityMax: 10
@@ -47,7 +47,7 @@ subworldFiles:
   - name: expansion1::subworlds/swamp/HardcoreSystems_Quarter_Swamp
   - name: expansion1::subworlds/radioactive/HardcoreSystems_Quarter_UraniumSprinkles
 
-  # Hardcore Systems Quarter shared DLC biome pool.
+  # Hardcore Systems shared DLC biome pool.
   - name: expansion1::subworlds/rust/HardcoreSystems_Quarter_med_Rust
   - name: expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_Radioactive
   - name: expansion1::subworlds/radioactive/HardcoreSystems_Quarter_med_UraniumFields

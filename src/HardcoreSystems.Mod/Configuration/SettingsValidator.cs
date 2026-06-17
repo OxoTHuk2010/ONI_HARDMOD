@@ -62,12 +62,13 @@ namespace HardcoreSystems.Configuration
         {
             if (string.Equals(value, "Vanilla", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(value, "Half", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(value, "Quarter", StringComparison.OrdinalIgnoreCase))
+                string.Equals(value, "Quarter", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(value, "Eighth", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
-            result.Add("World.AsteroidSize must be Vanilla, Half, or Quarter");
+            result.Add("World.AsteroidSize must be Vanilla, Half, Quarter, or Eighth");
         }
     }
 }

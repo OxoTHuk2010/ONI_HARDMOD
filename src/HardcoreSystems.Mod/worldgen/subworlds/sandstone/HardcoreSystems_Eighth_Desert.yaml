@@ -1,0 +1,22 @@
+biomeNoise: noise/Sandstone
+temperatureRange: Hot
+pdWeight: 0.2
+density:
+  min: 10
+  max: 20
+avoidRadius: 2
+doAvoidPoints: false
+dontRelaxChildren: false
+sampleBehaviour: PoissonDisk
+biomes:
+  - name: biomes/Sedimentary/Desert
+    weight: 4
+    tags:
+      - LightBug
+      - PrickleGrass
+      - PrickleGrassSeed
+      - Hatch
+      - HatchBuried  
+tags:
+  - IgnoreCaveOverride
+zoneType: Sandstone

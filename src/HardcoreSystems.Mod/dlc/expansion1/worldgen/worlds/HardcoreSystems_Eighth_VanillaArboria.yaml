@@ -1,0 +1,251 @@
+name: Hardcore VanillaArboria Eighth
+description: Hardcore Systems Eighth asteroid-size variant generated from VanillaArboria.
+disableWorldTraits: true
+nameTables: [ FOREST ]
+asteroidIcon: asteroid_vanilla_forestdefault_kanim
+
+worldTraitScale: 0.113 # Hardcore Systems v0.7 area-scaled
+worldsize:
+  X: 84
+  Y: 134
+layoutMethod: PowerTree
+
+defaultsOverrides:
+  startingWorldElements: [] # remove the algae check
+  data:
+    DrawWorldBorder: true
+    DrawWorldBorderForce: false
+    WorldBorderThickness: 3
+    WorldBorderRange: 1
+    OverworldDensityMin: 4
+    OverworldDensityMax: 7
+    OverworldAvoidRadius: 2
+    OverworldSampleBehaviour: PoissonDisk
+    OverworldMinNodes: 1
+    OverworldMaxNodes: 800
+    poiPadding: 1
+
+subworldFiles:
+  - name: subworlds/forest/HardcoreSystems_Eighth_ForestStart
+  - name: subworlds/forest/HardcoreSystems_Eighth_ForestMiniWater
+    weight: 0.5
+  - name: subworlds/forest/HardcoreSystems_Eighth_ForestMiniOxy
+  - name: subworlds/forest/HardcoreSystems_Eighth_ForestMiniMetal
+  - name: subworlds/forest/HardcoreSystems_Eighth_Forest
+  - name: subworlds/jungle/HardcoreSystems_Eighth_Jungle
+  - name: subworlds/frozen/HardcoreSystems_Eighth_Frozen
+  - name: subworlds/ocean/HardcoreSystems_Eighth_Ocean
+  - name: subworlds/rust/HardcoreSystems_Eighth_Rust
+  - name: subworlds/magma/HardcoreSystems_Eighth_Bottom
+  - name: subworlds/oil/HardcoreSystems_Eighth_OilPockets
+  - name: expansion1::subworlds/space/HardcoreSystems_Eighth_SpaceWithNoBorder
+  - name: expansion1::subworlds/space/HardcoreSystems_Eighth_HospitableClassicSurface
+  # Spaced Out biomes
+  - name: expansion1::subworlds/radioactive/HardcoreSystems_Eighth_UraniumSprinkles
+  - name: expansion1::subworlds/swamp/HardcoreSystems_Eighth_Swamp
+
+  # Hardcore Systems shared DLC biome pool.
+  - name: expansion1::subworlds/rust/HardcoreSystems_Eighth_med_Rust
+  - name: expansion1::subworlds/radioactive/HardcoreSystems_Eighth_med_Radioactive
+  - name: expansion1::subworlds/radioactive/HardcoreSystems_Eighth_med_UraniumFields
+  - name: expansion1::subworlds/radioactive/HardcoreSystems_Eighth_med_FrozenUraniumFields
+  - name: expansion1::subworlds/wasteland/HardcoreSystems_Eighth_WastelandBeetle
+  - name: expansion1::subworlds/wasteland/HardcoreSystems_Eighth_WastelandWorm
+  - name: expansion1::subworlds/frozen/HardcoreSystems_Eighth_FrozenSlush
+  - name: expansion1::subworlds/frozen/HardcoreSystems_Eighth_FrozenMedium
+  - name: expansion1::subworlds/ocean/HardcoreSystems_Eighth_med_Ocean
+  - name: expansion1::subworlds/forest/HardcoreSystems_Eighth_med_Forest
+  - name: expansion1::subworlds/forest/HardcoreSystems_Eighth_med_ForestHot
+  - name: expansion1::subworlds/marsh/HardcoreSystems_Eighth_HotMarshSteamy
+  - name: expansion1::subworlds/marsh/HardcoreSystems_Eighth_med_HotMarshInactive
+  - name: expansion1::subworlds/jungle/HardcoreSystems_Eighth_med_JungleInactive
+  - name: expansion1::subworlds/oil/HardcoreSystems_Eighth_OilSparse
+  - name: expansion1::subworlds/oil/HardcoreSystems_Eighth_OilWells
+  - name: expansion1::subworlds/barren/HardcoreSystems_Eighth_BarrenCore
+startSubworldName: subworlds/forest/HardcoreSystems_Eighth_ForestStart
+startingBaseTemplate: bases/forestBase
+startingBasePositionHorizontal:
+  min: 0.4
+  max: 0.5
+startingBasePositionVertical:
+  min: 0.45
+  max: 0.55
+
+fixedTraits:
+  - sunlightMed
+  - cosmicRadiationVeryLow
+
+seasons:
+  - ClassicStyleStartMeteorShowers
+  - VanillaArboriaMeteorShowers # unused
+
+# Specify where subworlds can spawn. These rules are processed in order and their effects are cumulative.
+
+unknownCellsAllowedSubworlds:
+  # Hardcore Systems Quarter compact fill. Keep every biome pocket small and mixed.
+  - tagcommand: Default
+    command: Replace
+    subworldNames:
+      - subworlds/forest/HardcoreSystems_Eighth_ForestMiniWater
+      - subworlds/forest/HardcoreSystems_Eighth_ForestMiniOxy
+      - subworlds/forest/HardcoreSystems_Eighth_ForestMiniMetal
+      - subworlds/forest/HardcoreSystems_Eighth_Forest
+      - subworlds/jungle/HardcoreSystems_Eighth_Jungle
+      - subworlds/frozen/HardcoreSystems_Eighth_Frozen
+      - subworlds/ocean/HardcoreSystems_Eighth_Ocean
+      - subworlds/rust/HardcoreSystems_Eighth_Rust
+      - subworlds/oil/HardcoreSystems_Eighth_OilPockets
+      - expansion1::subworlds/radioactive/HardcoreSystems_Eighth_UraniumSprinkles
+      - expansion1::subworlds/swamp/HardcoreSystems_Eighth_Swamp
+      - expansion1::subworlds/rust/HardcoreSystems_Eighth_med_Rust
+      - expansion1::subworlds/radioactive/HardcoreSystems_Eighth_med_Radioactive
+      - expansion1::subworlds/radioactive/HardcoreSystems_Eighth_med_UraniumFields
+      - expansion1::subworlds/radioactive/HardcoreSystems_Eighth_med_FrozenUraniumFields
+      - expansion1::subworlds/wasteland/HardcoreSystems_Eighth_WastelandBeetle
+      - expansion1::subworlds/wasteland/HardcoreSystems_Eighth_WastelandWorm
+      - expansion1::subworlds/frozen/HardcoreSystems_Eighth_FrozenSlush
+      - expansion1::subworlds/frozen/HardcoreSystems_Eighth_FrozenMedium
+      - expansion1::subworlds/ocean/HardcoreSystems_Eighth_med_Ocean
+      - expansion1::subworlds/forest/HardcoreSystems_Eighth_med_Forest
+      - expansion1::subworlds/forest/HardcoreSystems_Eighth_med_ForestHot
+      - expansion1::subworlds/marsh/HardcoreSystems_Eighth_HotMarshSteamy
+      - expansion1::subworlds/marsh/HardcoreSystems_Eighth_med_HotMarshInactive
+      - expansion1::subworlds/jungle/HardcoreSystems_Eighth_med_JungleInactive
+      - expansion1::subworlds/oil/HardcoreSystems_Eighth_OilSparse
+      - expansion1::subworlds/oil/HardcoreSystems_Eighth_OilWells
+      - expansion1::subworlds/barren/HardcoreSystems_Eighth_BarrenCore
+  # Compact ring around the printing pod.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 1
+    maxDistance: 1
+    command: Replace
+    subworldNames:
+      - subworlds/forest/HardcoreSystems_Eighth_ForestMiniWater
+      - subworlds/forest/HardcoreSystems_Eighth_ForestMiniOxy
+      - subworlds/forest/HardcoreSystems_Eighth_ForestMiniMetal
+      - subworlds/forest/HardcoreSystems_Eighth_Forest
+      - subworlds/frozen/HardcoreSystems_Eighth_Frozen
+      - expansion1::subworlds/radioactive/HardcoreSystems_Eighth_med_FrozenUraniumFields
+      - expansion1::subworlds/frozen/HardcoreSystems_Eighth_FrozenSlush
+      - expansion1::subworlds/frozen/HardcoreSystems_Eighth_FrozenMedium
+      - expansion1::subworlds/forest/HardcoreSystems_Eighth_med_Forest
+      - expansion1::subworlds/forest/HardcoreSystems_Eighth_med_ForestHot
+      - expansion1::subworlds/barren/HardcoreSystems_Eighth_BarrenCore
+  # Keep at least water-capable biomes available near the start without reserving a huge region.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 1
+    maxDistance: 2
+    command: UnionWith
+    subworldNames:
+      - subworlds/forest/HardcoreSystems_Eighth_ForestMiniWater
+      - subworlds/frozen/HardcoreSystems_Eighth_Frozen
+      - subworlds/ocean/HardcoreSystems_Eighth_Ocean
+      - expansion1::subworlds/radioactive/HardcoreSystems_Eighth_med_FrozenUraniumFields
+      - expansion1::subworlds/frozen/HardcoreSystems_Eighth_FrozenSlush
+      - expansion1::subworlds/frozen/HardcoreSystems_Eighth_FrozenMedium
+      - expansion1::subworlds/ocean/HardcoreSystems_Eighth_med_Ocean
+  # Mix all non-surface/non-magma biomes after the starter pocket.
+  - tagcommand: DistanceFromTag
+    tag: AtStart
+    minDistance: 2
+    maxDistance: 99
+    command: UnionWith
+    subworldNames:
+      - subworlds/forest/HardcoreSystems_Eighth_ForestMiniWater
+      - subworlds/forest/HardcoreSystems_Eighth_ForestMiniOxy
+      - subworlds/forest/HardcoreSystems_Eighth_ForestMiniMetal
+      - subworlds/forest/HardcoreSystems_Eighth_Forest
+      - subworlds/jungle/HardcoreSystems_Eighth_Jungle
+      - subworlds/frozen/HardcoreSystems_Eighth_Frozen
+      - subworlds/ocean/HardcoreSystems_Eighth_Ocean
+      - subworlds/rust/HardcoreSystems_Eighth_Rust
+      - subworlds/oil/HardcoreSystems_Eighth_OilPockets
+      - expansion1::subworlds/radioactive/HardcoreSystems_Eighth_UraniumSprinkles
+      - expansion1::subworlds/swamp/HardcoreSystems_Eighth_Swamp
+      - expansion1::subworlds/rust/HardcoreSystems_Eighth_med_Rust
+      - expansion1::subworlds/radioactive/HardcoreSystems_Eighth_med_Radioactive
+      - expansion1::subworlds/radioactive/HardcoreSystems_Eighth_med_UraniumFields
+      - expansion1::subworlds/radioactive/HardcoreSystems_Eighth_med_FrozenUraniumFields
+      - expansion1::subworlds/wasteland/HardcoreSystems_Eighth_WastelandBeetle
+      - expansion1::subworlds/wasteland/HardcoreSystems_Eighth_WastelandWorm
+      - expansion1::subworlds/frozen/HardcoreSystems_Eighth_FrozenSlush
+      - expansion1::subworlds/frozen/HardcoreSystems_Eighth_FrozenMedium
+      - expansion1::subworlds/ocean/HardcoreSystems_Eighth_med_Ocean
+      - expansion1::subworlds/forest/HardcoreSystems_Eighth_med_Forest
+      - expansion1::subworlds/forest/HardcoreSystems_Eighth_med_ForestHot
+      - expansion1::subworlds/marsh/HardcoreSystems_Eighth_HotMarshSteamy
+      - expansion1::subworlds/marsh/HardcoreSystems_Eighth_med_HotMarshInactive
+      - expansion1::subworlds/jungle/HardcoreSystems_Eighth_med_JungleInactive
+      - expansion1::subworlds/oil/HardcoreSystems_Eighth_OilSparse
+      - expansion1::subworlds/oil/HardcoreSystems_Eighth_OilWells
+      - expansion1::subworlds/barren/HardcoreSystems_Eighth_BarrenCore
+  # Quarter keeps lava/core content to the bottom band only.
+  - tagcommand: DistanceFromTag
+    tag: AtDepths
+    minDistance: 0
+    maxDistance: 0
+    command: Replace
+    subworldNames:
+      - subworlds/magma/HardcoreSystems_Eighth_Bottom
+  # Quarter pins actual space to the surface tag so the top opens above the asteroid.
+  - tagcommand: AtTag
+    tag: AtSurface
+    command: Replace
+    subworldNames:
+      - expansion1::subworlds/space/HardcoreSystems_Eighth_SpaceWithNoBorder
+  # Quarter keeps regolith/surface crust directly below space instead of letting it consume side biomes.
+  - tagcommand: DistanceFromTag
+    tag: AtSurface
+    minDistance: 1
+    maxDistance: 1
+    command: Replace
+    subworldNames:
+      - expansion1::subworlds/space/HardcoreSystems_Eighth_HospitableClassicSurface
+
+worldTemplateRules:
+  # Several optional water-focused geyser/vent attempts for Eighth. TryOne avoids hard generation failures on tight maps.
+  - names:
+      - geysers/steam
+      - geysers/salt_water
+      - geysers/filthy_water
+      - poi/poi_ocean_geyser_saltwater
+      - poi/jungle/geyser_steam
+      - poi/hotmarsh/geyser_steam
+      - expansion1::geysers/slush_salt_water
+    listRule: TryOne
+    times: 3
+    priority: 25
+    useRelaxedFiltering: true
+    allowedCellsFilter:
+      - command: Replace
+        tagcommand: DistanceFromTag
+        tag: AtStart
+        minDistance: 1
+        maxDistance: 99
+      - command: ExceptWith
+        zoneTypes: [ Space, MagmaCore ]
+  # Extra optional vents/volcanoes keep Eighth closer to Spaced Out resource density without guaranteed placement.
+  - names:
+      - geysers/chlorine_gas
+      - geysers/hot_po2
+      - geysers/methane
+      - geysers/hot_hydrogen
+      - geysers/liquid_co2
+      - geysers/slush_water
+      - geysers/small_volcano
+      - geysers/big_volcano
+      - expansion1::geysers/slush_salt_water
+    listRule: TryOne
+    times: 3
+    priority: 24
+    useRelaxedFiltering: true
+    allowedCellsFilter:
+      - command: Replace
+        tagcommand: DistanceFromTag
+        tag: AtStart
+        minDistance: 2
+        maxDistance: 99
+      - command: ExceptWith
+        zoneTypes: [ Space, MagmaCore ]

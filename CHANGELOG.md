@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.7.10
+
+- Replaced inherited hard template guarantees in Half Spaced Out worlds with optional `TryOne` resource rules to restore generation stability after adding the DLC biome pool.
+- Thin compact subworld borders for Half starter, Quarter, and Eighth generated subworlds by forcing `borderSizeOverride: 0..2`.
+- Lowered compact subworld `borderOverridePriority` to `5`, preserving biome separators while preventing abyssalite walls from dominating compact maps.
+
+## 0.7.9
+
+- Half Spaced Out vanilla-style worlds now add the shared DLC biome pool when `expansion1` content is available.
+- Half DLC worlds compact only the starting subworld so the starter biome does not reserve an oversized region.
+- Rewrote Half DLC fill rules to favor DLC candidates first, then vanilla candidates, while keeping vanilla biomes present and constraining lava/core and surface bands.
+
+## 0.7.8
+
+- Added a new experimental `Eighth` asteroid-size preset that targets about 12.5% map area, roughly half of `Quarter` by area.
+- `Eighth` uses the same compact subworld and DLC-biome-pool strategy as `Quarter`, with lower PowerTree density defaults (`OverworldDensityMin: 4`, `OverworldDensityMax: 7`) and smaller minimum axes (`80x112`) for tighter maps.
+- Reduced compact preset `WorldBorderThickness` from `5` to `3` to test thinner outer abyssalite/neutronium border bands while keeping a conservative border.
+
 ## 0.7.7
 
 - Quarter Spaced Out vanilla-style worlds now add a shared compact DLC biome pool instead of relying only on the source world's vanilla-style subworld list.
